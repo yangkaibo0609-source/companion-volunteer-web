@@ -6,6 +6,10 @@
 
 项目以一天陪护文字互动为入口，依次呈现陪护结算、数据黑板、访谈故事票根与主题收束。数据部分使用吊挂黑板交互，真实故事以可抽取的照片票根展开。
 
+## 在线体验
+
+[https://companion-volunteer-story.netlify.app](https://companion-volunteer-story.netlify.app)
+
 ## 技术栈
 
 - React 19 + TypeScript + Vite
