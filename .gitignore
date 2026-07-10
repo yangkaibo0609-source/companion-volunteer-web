@@ -16,6 +16,7 @@ cover-unzip/
 source-docs/
 .codex-temp/
 交互游戏图片/
+.netlify/
 
 # Editor directories and files
 .vscode/*
