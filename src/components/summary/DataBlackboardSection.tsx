@@ -1,5 +1,5 @@
-import { Fragment, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type RefObject } from 'react'
-import { dataBlackboardScenes, type BlackboardChart, type BlackboardMetric, type DataBlackboardScene as Scene } from '../../data/dataBlackboard'
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type RefObject } from 'react'
+import { dataBlackboardScenes, type BlackboardMetric, type DataBlackboardScene as Scene, type SourceParagraph as SourceParagraphData } from '../../data/dataBlackboard'
 import { dataSectionCovers, type SectionCoverAsset } from '../../data/sectionCovers'
 import { SectionCover } from './SectionCover'
 
@@ -7,14 +7,61 @@ type DataBlackboardSectionProps = {
   sectionRef?: RefObject<HTMLElement | null>
 }
 
-function ChalkReveal({ lines, visible }: { lines: string[]; visible: boolean }) {
+function InlineDataChart({ chart }: { chart: NonNullable<SourceParagraphData['chart']> }) {
+  const chartRef = useRef<HTMLDivElement | null>(null)
+  const [shouldLoad, setShouldLoad] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    const element = chartRef.current
+    if (!element || shouldLoad) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return
+        setShouldLoad(true)
+        observer.disconnect()
+      },
+      { rootMargin: '1400px 0px' },
+    )
+
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [shouldLoad])
+
+  return (
+    <figure className="inline-data-chart" ref={chartRef}>
+      <figcaption>{chart.title}</figcaption>
+      {shouldLoad && !failed ? (
+        <iframe src={chart.src} title={chart.title} loading="eager" onError={() => setFailed(true)} />
+      ) : failed ? (
+        <a href={chart.src} rel="noreferrer" target="_blank">查看原图表</a>
+      ) : (
+        <span aria-hidden="true" className="inline-data-chart__loading" />
+      )}
+    </figure>
+  )
+}
+
+function SourceParagraph({ paragraph, index }: { paragraph: SourceParagraphData; index: number }) {
+  return (
+    <>
+      <p style={{ '--line-index': index } as CSSProperties}>
+        {paragraph.segments.map((segment, segmentIndex) => (
+          <span className={segment.emphasis ? 'source-emphasis' : undefined} key={`${segment.text}-${segmentIndex}`}>
+            {segment.text}
+          </span>
+        ))}
+      </p>
+      {paragraph.chart && <InlineDataChart chart={paragraph.chart} />}
+    </>
+  )
+}
+
+function ChalkReveal({ paragraphs, visible }: { paragraphs: SourceParagraphData[]; visible: boolean }) {
   return (
     <div className={`chalk-lines${visible ? ' is-visible' : ''}`}>
-      {lines.map((line, index) => (
-        <p key={line} style={{ '--line-index': index } as CSSProperties}>
-          {line}
-        </p>
-      ))}
+      {paragraphs.map((paragraph, index) => <SourceParagraph index={index} key={paragraph.segments.map((segment) => segment.text).join('')} paragraph={paragraph} />)}
     </div>
   )
 }
@@ -55,46 +102,6 @@ function ChalkTimeline({ items, visible }: { items?: string[]; visible: boolean 
         <span key={item} style={{ '--time-index': index } as CSSProperties}>
           {item}
         </span>
-      ))}
-    </div>
-  )
-}
-
-function ChartPullDown({ charts, visible }: { charts?: BlackboardChart[]; visible: boolean }) {
-  const [openCharts, setOpenCharts] = useState<Set<string>>(() => new Set())
-
-  if (!charts?.length) return null
-
-  const toggleChart = (src: string) => {
-    setOpenCharts((current) => {
-      const next = new Set(current)
-      if (next.has(src)) next.delete(src)
-      else next.add(src)
-      return next
-    })
-  }
-
-  return (
-    <div className={`chart-scrolls${visible ? ' is-visible' : ''}`}>
-      {charts.map((chart) => (
-        <article className={`chart-scroll${openCharts.has(chart.src) ? ' is-open' : ''}`} key={chart.src}>
-          <div className="chart-scroll__head">
-            <strong>{chart.title}</strong>
-            <div>
-              <button type="button" onClick={() => toggleChart(chart.src)}>
-                {openCharts.has(chart.src) ? '收起图表' : '页面内展开'}
-              </button>
-              <a href={chart.src} target="_blank" rel="noreferrer">
-                新窗口查看
-              </a>
-            </div>
-          </div>
-          {openCharts.has(chart.src) && (
-            <div className="chart-scroll__paper">
-              <iframe src={chart.src} title={chart.title} loading="lazy" />
-            </div>
-          )}
-        </article>
       ))}
     </div>
   )
@@ -196,7 +203,7 @@ function DataBlackboardScene({ scene }: { scene: Scene }) {
       <div className="data-blackboard-scene__notes" aria-live="polite">
         <div className={`chalk-notes-paper${open ? ' is-visible' : ''}`}>
           <span className="chalk-notes-paper__pin" aria-hidden="true" />
-          <ChalkReveal lines={scene.chalkLines} visible={open} />
+          <ChalkReveal paragraphs={scene.paragraphs} visible={open} />
           <div className={`chalk-metric-cluster${open ? ' is-visible' : ''}`}>
             {scene.metrics.map((metric, index) => (
               <ChalkMetric
@@ -210,8 +217,11 @@ function DataBlackboardScene({ scene }: { scene: Scene }) {
             ))}
           </div>
           <ChalkTimeline items={scene.timeline} visible={open} />
-          {scene.closing && <p className={`chalk-closing${open ? ' is-visible' : ''}`}>{scene.closing}</p>}
-          <ChartPullDown charts={scene.charts} visible={open} />
+          {scene.closing && (
+            <div className={`chalk-closing${open ? ' is-visible' : ''}`}>
+              <SourceParagraph index={scene.paragraphs.length} paragraph={scene.closing} />
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -219,6 +229,22 @@ function DataBlackboardScene({ scene }: { scene: Scene }) {
 }
 
 export function DataBlackboardSection({ sectionRef }: DataBlackboardSectionProps) {
+  useEffect(() => {
+    if (document.head.querySelector('[data-dycharts-preconnect]')) return
+
+    const preconnect = document.createElement('link')
+    preconnect.rel = 'preconnect'
+    preconnect.href = 'https://dycharts.com'
+    preconnect.crossOrigin = 'anonymous'
+    preconnect.dataset.dychartsPreconnect = 'true'
+
+    const dnsPrefetch = document.createElement('link')
+    dnsPrefetch.rel = 'dns-prefetch'
+    dnsPrefetch.href = 'https://dycharts.com'
+
+    document.head.append(preconnect, dnsPrefetch)
+  }, [])
+
   const coverBeforeScene: Record<string, SectionCoverAsset | undefined> = {
     group: dataSectionCovers.group,
     time: dataSectionCovers.time,

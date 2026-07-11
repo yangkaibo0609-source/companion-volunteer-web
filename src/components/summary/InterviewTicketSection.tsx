@@ -290,12 +290,6 @@ export function InterviewTicketSection({ sectionRef }: InterviewTicketSectionPro
       <TicketTransition onEnter={scrollToWall} />
 
       <div ref={wallRef} className="interview-ticket-section__gallery">
-        <div className="interview-ticket-section__heading">
-          <p className="summary-kicker">故事目录</p>
-          <h2>数据说到这里，停住了。</h2>
-          <p>接下来，是那些没有被数字说完的事。</p>
-        </div>
-
         <TicketClothesline selectedId={selectedId} onSelect={selectStory} />
       </div>
 

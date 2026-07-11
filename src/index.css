@@ -5033,7 +5033,7 @@ p,
 .interview-ticket-section__gallery {
   margin: 0 auto;
   max-width: min(1920px, 99vw);
-  padding: clamp(70px, 9vh, 110px) clamp(12px, 1.8vw, 34px) clamp(54px, 7vh, 86px);
+  padding: clamp(28px, 4vh, 56px) clamp(12px, 1.8vw, 34px) clamp(54px, 7vh, 86px);
   position: relative;
   z-index: 2;
 }
@@ -6542,6 +6542,88 @@ p,
   transform: translateY(-2px);
 }
 
+.source-emphasis {
+  color: var(--ink);
+  font-weight: 750;
+  position: relative;
+  z-index: 0;
+}
+
+.source-emphasis::before {
+  background: rgb(239 205 92 / 0.34);
+  border-radius: 0.18em;
+  bottom: 0.08em;
+  content: '';
+  height: 0.48em;
+  left: -0.08em;
+  position: absolute;
+  right: -0.08em;
+  transform: rotate(-0.7deg);
+  z-index: -1;
+}
+
+.inline-data-chart {
+  background: rgb(255 250 232 / 0.72);
+  border: 1px solid rgb(90 112 75 / 0.16);
+  border-radius: 20px;
+  box-shadow: 0 22px 55px rgb(62 82 50 / 0.12);
+  margin: clamp(28px, 5vh, 56px) 0;
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.inline-data-chart figcaption {
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 14px 18px 10px;
+}
+
+.inline-data-chart iframe {
+  aspect-ratio: 16 / 10;
+  border: 0;
+  display: block;
+  min-height: 500px;
+  width: 100%;
+}
+
+.inline-data-chart a {
+  align-items: center;
+  color: var(--ink);
+  display: inline-flex;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 800;
+  min-height: 320px;
+  padding: 18px;
+  text-decoration: underline;
+}
+
+.inline-data-chart__loading {
+  display: block;
+  min-height: 320px;
+  position: relative;
+}
+
+.inline-data-chart__loading::after {
+  animation: inlineChartLoading 1.6s ease-in-out infinite;
+  background: rgb(95 134 81 / 0.2);
+  border-radius: 999px;
+  content: '';
+  height: 6px;
+  left: 12%;
+  position: absolute;
+  top: 50%;
+  transform-origin: left center;
+  width: 76%;
+}
+
+@keyframes inlineChartLoading {
+  0%, 100% { transform: scaleX(0.25); }
+  50% { transform: scaleX(1); }
+}
+
 @keyframes blackboardWeightedRelease {
   0% {
     transform: translateY(0) rotateX(1deg) rotateZ(0deg);
@@ -6607,5 +6689,12 @@ p,
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inline-data-chart__loading::after {
+    animation: none;
+    transform: scaleX(1);
   }
 }
