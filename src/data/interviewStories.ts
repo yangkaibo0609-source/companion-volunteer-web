@@ -1,25 +1,33 @@
-import storyCarry from '../assets/story/story-carry.png'
-import storyHug from '../assets/story/story-hug.png'
-import storyQuiet from '../assets/story/story-quiet.png'
-import storyStadium from '../assets/story/story-stadium.png'
-import storyVoice from '../assets/story/story-voice.png'
-import storyWalk from '../assets/story/story-walk.png'
+import storyAudio01 from '../assets/investigation/audio/stories/story-01.mp3'
+import storyAudio02 from '../assets/investigation/audio/stories/story-02.mp3'
+import storyAudio03 from '../assets/investigation/audio/stories/story-03.mp3'
+import storyAudio04 from '../assets/investigation/audio/stories/story-04.mp3'
+import storyAudio05 from '../assets/investigation/audio/stories/story-05.mp3'
+import storyAudio06 from '../assets/investigation/audio/stories/story-06.mp3'
+import storyVoice from '../assets/investigation/stories/story-01-voice.webp'
+import storyCarry from '../assets/investigation/stories/story-02-carry.webp'
+import storyWalk from '../assets/investigation/stories/story-03-walk.webp'
+import storyStadium from '../assets/investigation/stories/story-04-stadium.webp'
+import storyQuiet from '../assets/investigation/stories/story-05-quiet.webp'
+import storyHug from '../assets/investigation/stories/story-06-hug.webp'
 
 export type InterviewStory = {
   id: string
   title: string
   image: string
+  audio: string
   quote: string
   summary: string
   fullText: string[]
   tags: string[]
 }
 
-export const interviewStories: InterviewStory[] = [
+const rawInterviewStories: InterviewStory[] = [
   {
     id: 'jiajia',
     title: '佳佳老师哭了',
     image: storyVoice,
+    audio: storyAudio01,
     quote: '他可能说不出“感动”，但他感受到了。',
     summary:
       '佳佳从心理学系毕业，论文方向与孤独症有关，可整个大学期间，她从未真正见过孤独症患者。看到星星雨招募长期志愿者后，她报名进入机构，做了四个月长期服务：每周一到周五，每天九小时，陪伴二十多名心智障碍学员，不拿工资，也几乎没有走神的余地。她会在午饭后带学生散步，一天下来精神和身体都很累，却仍觉得幸福。德国圣诞集市义卖表演时，一名学员害怕陌生舞台，老师们挤到第一排举起大拇指鼓励她。佳佳当场哭了，平时陪护的学生安静地走到她身边，说“佳佳老师哭了”。她意识到，对方也许说不出情绪的名字，却真切感受到了她的情绪。志愿服务结束后，她因为北京生活成本无法继续，但未来如果回到北京工作，她还想一直做志愿服务。这份记忆也让她重新理解了“陪伴”两个字的重量。',
@@ -47,6 +55,7 @@ export const interviewStories: InterviewStory[] = [
     id: 'aping',
     title: '他主动趴到我背上',
     image: storyCarry,
+    audio: storyAudio02,
     quote: '他不说话，但她知道：他在说，再来一次。',
     summary:
       '草桥空间有一个十岁左右的重度自闭孩子，没有语言，认知也很低。阿萍第一次见到他时，不知道怎样靠近：孩子说不了话，听不懂指令，也不和人对视，还一直拒绝进教室。于是他们只能在走廊里做传球练习，她把球轻轻滚过去，他接住再滚回来。来来回回之间，孩子好像有点开心了。阿萍想到自己平时和孩子互动时会背着走、逗着玩，于是尝试把他背起来，在走廊里走来走去。孩子特别开心，放下之后又一次次主动趴到她背上。阿萍知道，他是在说“再来一次”。做了六年志愿服务后，她仍把这个瞬间记得很清楚。她每周固定去两次，基本接触过草桥空间十几个孩子，也承认最大的障碍是读不懂孩子的语言。但那天，没有语言也发生了连接。她后来回忆起来，仍觉得那是一次难得的互相读懂。',
@@ -68,6 +77,7 @@ export const interviewStories: InterviewStory[] = [
     id: 'xiaxia',
     title: '阳光下的那首歌',
     image: storyWalk,
+    audio: storyAudio03,
     quote: '阳光照在队伍上，他忽然唱得很洪亮。',
     summary:
       '夏夏带孩子们去上篮球课，最难的不是篮球课本身，而是把孩子安全带到那里。排队、整理秩序、走到公交站、等车、上车、下车，每一步都要盯着，也要不断提醒“注意安全”“排成一列”。公交车上，有些乘客会用异样眼光看这群孩子，她怕影响其他乘客，一路都绷着神经。有些孩子害怕外出、害怕人群，她只能用定时器和贴纸奖励慢慢安抚：每五分钟给一个贴纸，四个贴纸换一块小饼干。篮球课结束后，他们走路回机构。十一月的阳光不冷不热，夏夏想起身边那个胆小的男孩很爱唱歌，就问他要不要唱一首。他唱了，声音自信又洪亮，完全听不出胆怯。阳光照在排队走路的孩子们身上，她在那一刻感到特别感动，也特别开心。那一小段回程，像是辛苦陪护之后突然出现的回声。',
@@ -88,6 +98,7 @@ export const interviewStories: InterviewStory[] = [
     id: 'axing',
     title: '你是我的朋友',
     image: storyStadium,
+    audio: storyAudio04,
     quote: '明明只是一次陪护，他却像朋友一样关心她。',
     summary:
       '阿星参加一次外出陪护活动，被分到一个特别健谈的小男孩。从见面开始，他就一直和她聊天，问她叫什么名字，问她学校怎么样。那天的活动任务是在奥林匹克森林公园和标志建筑、春天的花合影，他们一路走一路拍，也一路分享彼此生活。活动结束时，孩子问她能不能加微信，就这样，他们成为了朋友。后来阿星发朋友圈，有时因为学习压力写下低落内容，他会立刻留言或私信，问她是不是心情不好，提醒她一定要开心起来，多读书、出去走走；有时还会约她来学校一起吃饭。阿星从小学就接触心智障碍群体，大学加入志愿者联合会助残板块后一直坚持。同期培训的十多个志愿者，如今可能只剩一两个仍在继续，但她一直在。她说，只要有机会，就会一直做下去。这个孩子也让她看见，陪护关系并不总是单向给予。',
@@ -109,6 +120,7 @@ export const interviewStories: InterviewStory[] = [
     id: 'huahua',
     title: '从排斥到牵手',
     image: storyQuiet,
+    audio: storyAudio05,
     quote: '谁都没有说话，但靠近已经发生了。',
     summary:
       '在顺义快乐营，花花陪护一个十岁左右的自闭症小男孩。刚开始，他完全不理她，不说话、不看她，一直跑到场地外面找爸爸妈妈。她说话没用，拿玩具没用，跟着他跑也没用。后来花花索性不再急着做什么，只是陪着他：他跑，她就跟着；他不说话，她也不逼迫。偶尔她会轻声问一句，是不是不想做这个活动，想做些什么，要不要喝水；他不回答，也没关系。到了自由活动时间，孩子慢慢开始接受她，虽然仍不太说话，却会跟在她身边，对她的话有反应。之后，他主动拉了她的手。两个人一起躺在垫子上看天花板，好几分钟谁都没有说话。活动结束时，孩子点头表示下次还来。花花做志愿者十年，累计服务过48个心智障碍儿童，她知道能坚持并不容易。这个故事最轻，却也最能说明耐心的力量。',
@@ -131,6 +143,7 @@ export const interviewStories: InterviewStory[] = [
     id: 'qingqing',
     title: '那个跑过来抱住她的孩子',
     image: storyHug,
+    audio: storyAudio06,
     quote: '在一对多的服务里，真的有孩子记住了你。',
     summary:
       '高中时，清清在家乡社区做义工。当地志愿者很少，基本是一对二十的比例，她没有办法固定陪护某一个孩子，只能和他们一起玩，引导他们做些活动，让他们觉得新奇。一次一个小时的服务结束后，她正在换鞋准备离开，忽然有个孩子从老师带领的队伍里跌跌撞撞地跑出来。她当时很惊讶，甚至忘记了他的名字。那个孩子什么都没说，只是抱住她。清清蹲下来也抱住他，跟他说下次再来找他玩，劝了半天，他才回到队伍里。多年后她仍觉得感动：在一对多的服务环境里，真的有孩子记住了你。她累计服务过约150名心智障碍儿童，也相信志愿者流动本身有意义，因为会有更多新人知道这件事，对心智障碍者多一些包容和理解。她也把志愿服务看作一个能让自己放松的精神空间。',
@@ -150,3 +163,16 @@ export const interviewStories: InterviewStory[] = [
     tags: ['一对多服务', '被记住', '流动与理解'],
   },
 ]
+
+const anonymousNames = ['佳佳', '阿萍', '夏夏', '阿星', '花花', '清清']
+
+function anonymize(text: string, index: number) {
+  return text.replaceAll(anonymousNames[index], `志愿者${String(index + 1).padStart(2, '0')}`)
+}
+
+export const interviewStories: InterviewStory[] = rawInterviewStories.map((story, index) => ({
+  ...story,
+  title: anonymize(story.title, index),
+  summary: anonymize(story.summary, index),
+  fullText: story.fullText.map((paragraph) => anonymize(paragraph, index)),
+}))

@@ -51,19 +51,8 @@ function useAnimatedNumber(target: number, active: boolean, duration = 1400) {
   return value
 }
 
-function useSummaryStage(reducedMotion: boolean) {
+function useSummaryStage() {
   const [stage, setStage] = useState<SummaryStage>('scores')
-
-  useEffect(() => {
-    if (stage !== 'scores') return
-
-    const timeout = window.setTimeout(() => {
-      setStage('review')
-    }, reducedMotion ? 900 : 4300)
-
-    return () => window.clearTimeout(timeout)
-  }, [reducedMotion, stage])
-
   return [stage, setStage] as const
 }
 
@@ -84,7 +73,7 @@ export function SummaryPage({ onRestart }: SummaryPageProps) {
   const energy = useGameStore((state) => state.energy)
   const selectedChoices = useGameStore((state) => state.selectedChoices)
   const reducedMotion = useGameStore((state) => state.reducedMotion)
-  const [stage, setStage] = useSummaryStage(reducedMotion)
+  const [stage, setStage] = useSummaryStage()
   const dataBlackboardRef = useRef<HTMLElement | null>(null)
 
   const endingLevel = getEndingLevel(trust, energy)
@@ -111,15 +100,21 @@ export function SummaryPage({ onRestart }: SummaryPageProps) {
     <main className={`summary-page summary-page--${stage}`}>
       {stage === 'scores' && (
         <section className="summary-score-stage" aria-label="结算分数">
-          <div className="summary-stage-heading">
-            <p className="summary-kicker">今日陪护结算</p>
-            <h1>先看看你的信任值和精力值</h1>
-            <p>{scoreLead}</p>
-          </div>
+          <div className="summary-settlement">
+            <div className="summary-stage-heading">
+              <p className="summary-kicker">今日陪护结算</p>
+              <h1>{ending.title}</h1>
+              <p>{scoreLead}</p>
+            </div>
 
-          <div className="summary-grid summary-grid--scores">
-            <ScoreCard label="信任值" value={trust} animatedValue={animatedTrust} />
-            <ScoreCard label="精力值" value={energy} animatedValue={animatedEnergy} />
+            <div className="summary-grid summary-grid--scores">
+              <ScoreCard label="信任值" value={trust} animatedValue={animatedTrust} />
+              <ScoreCard label="精力值" value={energy} animatedValue={animatedEnergy} />
+            </div>
+
+            <button className="summary-settlement__continue" type="button" onClick={() => setStage('review')}>
+              查看今天的五次选择
+            </button>
           </div>
         </section>
       )}

@@ -24,7 +24,7 @@ function TicketTransition({ onEnter }: { onEnter: () => void }) {
     <div className="ticket-transition-screen">
       <div className="ticket-transition-screen__copy">
         <p className="summary-kicker">访谈票根</p>
-        <h2>数据说到这里，停住了。</h2>
+        <h2>数据之外，我们也听见了志愿者真实的讲述。</h2>
         <p>它能告诉我们规模、比例和困境，却说不完一次牵手、一首歌、一次拥抱，和一个人决定留下来的理由。</p>
         <button type="button" onClick={onEnter}>
           抽出一张故事票根
@@ -91,7 +91,7 @@ function FanTicket({
   const handlePointerUp = (event: PointerEvent<HTMLButtonElement>) => {
     if (startYRef.current == null) return
     event.currentTarget.releasePointerCapture(event.pointerId)
-    endDrag(dragPull > 0.46)
+    endDrag(true)
   }
 
   return (
@@ -205,6 +205,15 @@ function TicketStoryBody({ story }: { story: InterviewStory }) {
   )
 }
 
+function TicketStoryAudio({ story }: { story: InterviewStory }) {
+  return (
+    <div className="ticket-story-audio">
+      <strong>点击听有声故事</strong>
+      <audio controls preload="metadata" src={story.audio} />
+    </div>
+  )
+}
+
 function TicketNavigation({ onClose, onNext, onPrevious }: Pick<TicketStageProps, 'onClose' | 'onNext' | 'onPrevious'>) {
   return (
     <nav className="ticket-navigation" aria-label="票根故事切换">
@@ -234,6 +243,7 @@ function TicketStage({ story, index, total, onClose, onNext, onPrevious }: Ticke
         </span>
         <h3>{story.title}</h3>
         <blockquote>{story.quote}</blockquote>
+        <TicketStoryAudio story={story} />
         <TicketStoryBody story={story} />
         <TicketNavigation onClose={onClose} onNext={onNext} onPrevious={onPrevious} />
       </div>
@@ -302,6 +312,7 @@ export function InterviewTicketSection({ sectionRef }: InterviewTicketSectionPro
           }}
         >
           <TicketStage
+            key={selectedStory.id}
             story={selectedStory}
             index={selectedIndex}
             total={interviewStories.length}

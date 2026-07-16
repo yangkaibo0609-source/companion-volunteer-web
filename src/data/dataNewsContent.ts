@@ -19,14 +19,14 @@ export type DataBlackboardScene = {
 }
 
 const paragraph = (segments: SourceSegment[], chart?: BlackboardChart): SourceParagraph => ({ segments, chart })
-const chart = (src: string): BlackboardChart => ({ title: '相关数据图表', src })
+const chart = (title: string, src: string): BlackboardChart => ({ title, src })
 
 export const dataBlackboardScenes: DataBlackboardScene[] = [
   {
     id: 'group', part: 1, label: '数据黑板 01', question: '心智障碍者：一个庞大却沉默的群体', sourceSection: '心智障碍者：一个庞大却沉默的群体',
     paragraphs: [
       paragraph([{ text: '心智障碍涵盖智力发育迟缓、孤独症谱系障碍、唐氏综合征等多种类型。《心智障碍者家庭需求与未来托付》调研报告显示，' }, { text: '我国心智障碍群体约有1200万至2000万人', emphasis: true }, { text: '。这意味着，' }, { text: '每70个中国人里，就有1个是心智障碍者', emphasis: true }, { text: '。他们大多数无民事行为能力或限制民事行为能力，在康复、教育、就业、未来安置与监护等各个环节，都面临巨大挑战。' }]),
-      paragraph([{ text: '中国残联发布的《2025年残疾人事业发展统计公报》显示，接受基本康复服务的持证残疾人中，智力残疾人有66.3万人，精神残疾人有152.8万人。' }], chart('https://dycharts.com/xshow/index.html?id=c_d8e2c0c4c7dd61fa4c6508534d05e4a3')),
+      paragraph([{ text: '中国残联发布的《2025年残疾人事业发展统计公报》显示，接受基本康复服务的持证残疾人中，智力残疾人有66.3万人，精神残疾人有152.8万人。' }], chart('心智障碍者群体及康复服务数据', 'https://dycharts.com/xshow/index.html?id=c_d8e2c0c4c7dd61fa4c6508534d05e4a3')),
       paragraph([{ text: '在智力与精神残疾的交叉地带，孤独症（自闭症）是最受关注的一类。目前，我国孤独症谱系障碍人群已达1300万至1400万人。其中，0至14岁的孤独症儿童约有300万至500万人。' }, { text: '孤独症已成为导致我国儿童精神残疾的首要疾病。', emphasis: true }]),
     ],
     metrics: [{ value: '1200万至2000万人', label: '我国心智障碍群体约有1200万至2000万人' }, { value: '每70个中国人里，就有1个', label: '每70个中国人里，就有1个是心智障碍者' }, { value: '1300万至1400万人', label: '我国孤独症谱系障碍人群已达1300万至1400万人' }, { value: '300万至500万人', label: '0至14岁的孤独症儿童约有300万至500万人' }],
@@ -35,13 +35,12 @@ export const dataBlackboardScenes: DataBlackboardScene[] = [
     id: 'volunteers', part: 1, label: '数据黑板 02', question: '志愿者：照亮他人的人', sourceSection: '志愿者：照亮他人的人',
     paragraphs: [
       paragraph([{ text: '与心智障碍群体的庞大规模相对应的，是另一组同样惊人的数字。' }]),
-      paragraph([{ text: '截至目前，' }, { text: '我国实名注册志愿者总数已达2.4亿人', emphasis: true }, { text: '，志愿队伍135万个，志愿服务项目1332万个。其中，助残志愿者有3744.3万人，助残社会组织有2997个。他们的服务范围包括康复、就业帮助、教育辅导、托养照料、心理辅导、文体活动等多个领域。' }], chart('https://dycharts.com/xshow/index.html?id=c_2a3665964da43a6469214253e8055246')),
+      paragraph([{ text: '截至目前，' }, { text: '我国实名注册志愿者总数已达2.4亿人', emphasis: true }, { text: '，志愿队伍135万个，志愿服务项目1332万个。其中，助残志愿者有3744.3万人，助残社会组织有2997个。他们的服务范围包括康复、就业帮助、教育辅导、托养照料、心理辅导、文体活动等多个领域。' }], chart('实名注册志愿者与助残志愿者', 'https://dycharts.com/xshow/index.html?id=c_2a3665964da43a6469214253e8055246')),
       paragraph([{ text: '那么，这些“照亮他人的人”，是什么样的人？', emphasis: true }]),
       paragraph([{ text: '注册志愿者，女性撑起半边天。2024年，女性志愿者占比达到65.79%，男性占34.21%。近六年来，女性志愿者的比例还在持续攀升。' }]),
       paragraph([{ text: '这些注册志愿者大多受过良好教育。大专以上学历的占75.73%，本科及以上的占50.55%。他们很年轻，学生群体占61.46%，年龄集中在15至22岁。' }]),
       paragraph([{ text: '当我们把目光投向“活跃志愿者”——那些真正走进社区、走进心智障碍者家庭的人——数据呈现出另一种样貌：' }]),
-      paragraph([{ text: '平均年龄43.1岁，男性占56.7%，已婚群体高达81%。大专及以上文化程度占比最高，受教育水平越高的居民，参与志愿服务的可能性也越高。' }], chart('https://dycharts.com/xshow/index.html?id=c_ff52fe485a326c7c2bc78a1120e7ad26')),
-      paragraph([{ text: '志愿者的面孔从来不是单一的。', emphasis: true }]),
+      paragraph([{ text: '平均年龄43.1岁，男性占56.7%，已婚群体高达81%。大专及以上文化程度占比最高，受教育水平越高的居民，参与志愿服务的可能性也越高。' }], chart('注册志愿者与活跃志愿者画像', 'https://dycharts.com/xshow/index.html?id=c_ff52fe485a326c7c2bc78a1120e7ad26')),
     ],
     metrics: [{ value: '2.4亿人', label: '我国实名注册志愿者总数已达2.4亿人' }, { value: '3744.3万人', label: '助残志愿者有3744.3万人' }, { value: '65.79%', label: '女性志愿者占比达到65.79%' }, { value: '61.46%', label: '学生群体占61.46%' }],
   },
@@ -54,18 +53,17 @@ export const dataBlackboardScenes: DataBlackboardScene[] = [
       paragraph([{ text: '这就是志愿者们走进的世界。' }]),
       paragraph([{ text: '全国活跃志愿者年度贡献服务总时长——' }, { text: '41.06亿小时。', emphasis: true }]),
       paragraph([{ text: '平均到每位活跃志愿者，人均' }, { text: '86.52小时/年', emphasis: true }, { text: '。' }]),
-      paragraph([{ text: '这些时间从何而来？从周末、从夜晚、从节假日的休息中挤出来。他们不是闲人——他们是上班族、是学生、是退休老人，用本属于自己的时间，填补了公共服务与家庭需求之间的缝隙。' }]),
     ],
-    metrics: [{ value: '5,871元', label: '心智障碍者家庭月均支出5,871元' }, { value: '41.06亿小时', label: '全国活跃志愿者年度贡献服务总时长' }, { value: '86.52小时/年', label: '平均到每位活跃志愿者，人均86.52小时/年' }], timeline: ['周末', '夜晚', '节假日的休息'],
+    metrics: [{ value: '5,871元', label: '心智障碍者家庭月均支出5,871元' }, { value: '41.06亿小时', label: '全国活跃志愿者年度贡献服务总时长' }, { value: '86.52小时/年', label: '平均到每位活跃志愿者，人均86.52小时/年' }],
   },
   {
     id: 'dilemma', part: 3, label: '数据黑板 04', question: '职业倦怠与心理健康', sourceSection: '职业倦怠与心理健康；薪酬困境：情怀无法替代面包；志愿者的真实困境',
     paragraphs: [
       paragraph([{ text: '如果说志愿者和照护者的付出已经令人动容，那么他们面临的困境则令人不安。' }]),
-      paragraph([{ text: '2025年1月，《公益人职业倦怠和心理健康调查报告》发布。数据显示：约27%的公益人存在不同程度的职业倦怠；高达63.86%患有程度不同的抑郁；67.33%存在不同程度的焦虑；43.56%对生活不满意。' }], chart('https://dycharts.com/xshow/index.html?id=c_cc8728a45d8205657697a74227d39e1b')),
+      paragraph([{ text: '2025年1月，《公益人职业倦怠和心理健康调查报告》发布。数据显示：约27%的公益人存在不同程度的职业倦怠；高达63.86%患有程度不同的抑郁；67.33%存在不同程度的焦虑；43.56%对生活不满意。' }], chart('公益人职业倦怠与心理健康', 'https://dycharts.com/xshow/index.html?id=c_cc8728a45d8205657697a74227d39e1b')),
       paragraph([{ text: '照亮他人的人，自己却正在被黑暗吞噬。' }]),
-      paragraph([{ text: '《基金会行业薪酬观察报告（2025）》数据显示，2024年基金会专职人员平均年薪为81,452元，中位值为66,000元；助理专员的薪酬中位数为65,208元。' }], chart('https://dycharts.com/xshow/index.html?id=c_cc8728a45d8205657697a74227d39e1b')),
-      paragraph([{ text: '而2025年全国城镇非私营单位就业人员年平均工资为129,441元——公益行业普通从业者的收入，仅为社会平均水平的一半左右。' }, { text: ' 这是一份需要“用爱发电”的职业，但情怀无法替代面包。', emphasis: true }], chart('https://dycharts.com/xshow/index.html?id=c_ebe09a73226a8310bdeaadefed961a13')),
+      paragraph([{ text: '《基金会行业薪酬观察报告（2025）》数据显示，2024年基金会专职人员平均年薪为81,452元，中位值为66,000元；助理专员的薪酬中位数为65,208元。' }]),
+      paragraph([{ text: '而2025年全国城镇非私营单位就业人员年平均工资为129,441元——公益行业普通从业者的收入，仅为社会平均水平的一半左右。' }, { text: ' 这是一份需要“用爱发电”的职业，但情怀无法替代面包。', emphasis: true }], chart('公益人月收入分布', 'https://dycharts.com/xshow/index.html?id=c_ebe09a73226a8310bdeaadefed961a13')),
       paragraph([{ text: '薪酬缺乏竞争力直接导致了人才流失。资金不稳定、薪资缺乏吸引力，使得新鲜血液难以进入，老员工“用爱发电”能坚持多久？' }]),
       paragraph([{ text: '志愿者的处境更直接：零薪酬，零补贴。服务地与学校或居住地之间的通勤，是最大的体力消耗。这些交通成本从未被计入服务时长，也从未被补偿。' }]),
       paragraph([{ text: '流失触目惊心。全国实名注册志愿者达2.68亿，但活跃志愿者仅7704万人——超过70%的注册者并未真正活跃在一线。而在心智障碍陪护等深度服务领域，同期留存率往往不足两成。时间精力冲突、通勤成本过高，是最主要的退出原因。' }]),

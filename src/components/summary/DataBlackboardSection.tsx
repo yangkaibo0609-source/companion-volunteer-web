@@ -2,6 +2,9 @@ import { Fragment, useEffect, useRef, useState, type CSSProperties, type Keyboar
 import { dataBlackboardScenes, type BlackboardMetric, type DataBlackboardScene as Scene, type SourceParagraph as SourceParagraphData } from '../../data/dataBlackboard'
 import { dataSectionCovers, type SectionCoverAsset } from '../../data/sectionCovers'
 import { SectionCover } from './SectionCover'
+import { VolunteerMessageWall } from './VolunteerMessageWall'
+import { VolunteerPhotoWall } from './VolunteerPhotoWall'
+import { VolunteerVoiceWall } from './VolunteerVoiceWall'
 
 type DataBlackboardSectionProps = {
   sectionRef?: RefObject<HTMLElement | null>
@@ -11,6 +14,7 @@ function InlineDataChart({ chart }: { chart: NonNullable<SourceParagraphData['ch
   const chartRef = useRef<HTMLDivElement | null>(null)
   const [shouldLoad, setShouldLoad] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const element = chartRef.current
@@ -22,22 +26,40 @@ function InlineDataChart({ chart }: { chart: NonNullable<SourceParagraphData['ch
         setShouldLoad(true)
         observer.disconnect()
       },
-      { rootMargin: '1400px 0px' },
+      { rootMargin: '1100px 0px' },
     )
 
     observer.observe(element)
     return () => observer.disconnect()
   }, [shouldLoad])
 
+  useEffect(() => {
+    if (!shouldLoad || loaded || failed) return
+    const timeout = window.setTimeout(() => setFailed(true), 16000)
+    return () => window.clearTimeout(timeout)
+  }, [failed, loaded, shouldLoad])
+
   return (
-    <figure className="inline-data-chart" ref={chartRef}>
+    <figure className={`inline-data-chart${loaded ? ' is-loaded' : ''}`} ref={chartRef}>
       <figcaption>{chart.title}</figcaption>
       {shouldLoad && !failed ? (
-        <iframe src={chart.src} title={chart.title} loading="eager" onError={() => setFailed(true)} />
+        <>
+          {!loaded && <span className="inline-data-chart__status">图表正在展开</span>}
+          <iframe
+            src={chart.src}
+            title={chart.title}
+            loading="lazy"
+            onError={() => setFailed(true)}
+            onLoad={() => setLoaded(true)}
+          />
+        </>
       ) : failed ? (
-        <a href={chart.src} rel="noreferrer" target="_blank">查看原图表</a>
+        <div className="inline-data-chart__fallback">
+          <strong>{chart.title}</strong>
+          <a href={chart.src} rel="noreferrer" target="_blank">打开原始图表</a>
+        </div>
       ) : (
-        <span aria-hidden="true" className="inline-data-chart__loading" />
+        <span aria-hidden="true" className="inline-data-chart__loading">图表正在展开</span>
       )}
     </figure>
   )
@@ -268,6 +290,13 @@ export function DataBlackboardSection({ sectionRef }: DataBlackboardSectionProps
               />
             )}
             <DataBlackboardScene scene={scene} />
+            {scene.id === 'volunteers' && (
+              <>
+                <VolunteerPhotoWall />
+                <VolunteerVoiceWall />
+              </>
+            )}
+            {scene.id === 'time' && <VolunteerMessageWall />}
           </Fragment>
         )
       })}
