@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "verify:update": "node scripts/verify-requested-update.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
