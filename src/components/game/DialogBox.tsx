@@ -6,11 +6,13 @@ type DialogBoxProps = {
   text: string
   canAdvance: boolean
   onNext: () => void
+  showClickHint?: boolean
+  onInteraction?: () => void
 }
 
 const TYPE_INTERVAL_MS = 28
 
-export function DialogBox({ speaker, text, canAdvance, onNext }: DialogBoxProps) {
+export function DialogBox({ speaker, text, canAdvance, onNext, showClickHint = false, onInteraction }: DialogBoxProps) {
   const reducedMotion = useGameStore((state) => state.reducedMotion)
   const [visibleCount, setVisibleCount] = useState(text.length)
   const displayedText = useMemo(() => text.slice(0, visibleCount), [text, visibleCount])
@@ -30,6 +32,7 @@ export function DialogBox({ speaker, text, canAdvance, onNext }: DialogBoxProps)
   }, [isComplete, reducedMotion, text.length, visibleCount])
 
   function handleAdvance() {
+    onInteraction?.()
     if (!isComplete) {
       setVisibleCount(text.length)
       return
@@ -43,6 +46,10 @@ export function DialogBox({ speaker, text, canAdvance, onNext }: DialogBoxProps)
       <span className="dialog-speaker">{speaker}</span>
       <span className="dialog-text">{displayedText}</span>
       <span className="dialog-cue">{isComplete ? (canAdvance ? '继续' : '选择你的回应') : '展开'}</span>
+      <span className={`game-click-hint${showClickHint ? '' : ' is-hidden'}`} aria-hidden="true">
+        <i />
+        <b>轻点继续</b>
+      </span>
     </button>
   )
 }

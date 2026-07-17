@@ -2,16 +2,19 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { GameScene } from './components/game/GameScene'
 import { ExperienceShell } from './components/layout/ExperienceShell'
 import { BadgeOpening3D } from './components/opening/BadgeOpening3D'
+import { SectionCover } from './components/summary/SectionCover'
 import { SummaryPage } from './components/summary/SummaryPage'
 import { characterAssets, openingBadgeAssets, sceneAssets } from './data/assetMap'
+import { mainSectionCover } from './data/sectionCovers'
 import { useGameStore } from './store/gameStore'
 import { preloadImages } from './utils/assetPreload'
 
-const primaryAssets = [...Object.values(sceneAssets), ...Object.values(characterAssets), ...Object.values(openingBadgeAssets)]
+const primaryAssets = [...Object.values(sceneAssets), ...Object.values(characterAssets), ...Object.values(openingBadgeAssets), mainSectionCover.webpImage]
 
 function App() {
   const [isReady, setIsReady] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [openingCoverSeen, setOpeningCoverSeen] = useState(false)
   const phase = useGameStore((state) => state.phase)
   const completeOpening = useGameStore((state) => state.completeOpening)
   const restart = useGameStore((state) => state.restart)
@@ -50,11 +53,13 @@ function App() {
     if (!isReady) return
     const qaMode = new URLSearchParams(window.location.search).get('qa')
     if (qaMode === 'summary') {
+      setOpeningCoverSeen(true)
       restart()
     }
   }, [isReady, restart])
 
   const handleRestart = useCallback(() => {
+    setOpeningCoverSeen(false)
     restart()
     requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
   }, [restart])
@@ -79,7 +84,17 @@ function App() {
 
   return (
     <ExperienceShell mode={shellMode} onRestart={handleRestart}>
-      {phase === 'opening' && <BadgeOpening3D onEnter={completeOpening} />}
+      {phase === 'opening' && !openingCoverSeen && (
+        <SectionCover
+          ariaLabel={mainSectionCover.ariaLabel}
+          eager
+          id={mainSectionCover.id}
+          image={mainSectionCover.image}
+          webpImage={mainSectionCover.webpImage}
+          onAdvance={() => setOpeningCoverSeen(true)}
+        />
+      )}
+      {phase === 'opening' && openingCoverSeen && <BadgeOpening3D onEnter={completeOpening} />}
       {(phase === 'scene' || phase === 'feedback') && <GameScene onRestart={handleRestart} />}
       {phase === 'summary' && <SummaryPage onRestart={handleRestart} />}
     </ExperienceShell>

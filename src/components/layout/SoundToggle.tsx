@@ -6,13 +6,16 @@ export function SoundToggle() {
 
   return (
     <button
-      className="sound-toggle"
+      className={`sound-toggle${soundEnabled ? ' is-on' : ''}`}
       type="button"
       aria-pressed={soundEnabled}
-      aria-label={soundEnabled ? '关闭声音' : '开启声音'}
+      aria-label={soundEnabled ? '关闭背景音乐与文字提示音' : '开启背景音乐与文字提示音'}
       onClick={() => setSoundEnabled(!soundEnabled)}
     >
-      <span aria-hidden="true">{soundEnabled ? '声' : '静'}</span>
+      <span className="sound-toggle__icon" aria-hidden="true">
+        {soundEnabled ? '♪' : '静'}
+      </span>
+      <span className="sound-toggle__label">{soundEnabled ? '氛围乐' : '开声音'}</span>
     </button>
   )
 }

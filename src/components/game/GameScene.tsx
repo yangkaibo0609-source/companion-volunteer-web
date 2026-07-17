@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { sceneAssets } from '../../data/assetMap'
 import { gameScenes } from '../../data/gameScript'
 import { useGameStore } from '../../store/gameStore'
@@ -13,6 +13,7 @@ type GameSceneProps = {
 }
 
 export function GameScene({ onRestart }: GameSceneProps) {
+  const [showClickHint, setShowClickHint] = useState(true)
   const phase = useGameStore((state) => state.phase)
   const currentSceneIndex = useGameStore((state) => state.currentSceneIndex)
   const currentLineIndex = useGameStore((state) => state.currentLineIndex)
@@ -57,7 +58,14 @@ export function GameScene({ onRestart }: GameSceneProps) {
       <div className="game-control-layer">
         {phase === 'scene' && (
           <>
-            <DialogBox speaker={line.speaker} text={line.text} canAdvance={hasMoreLines} onNext={continueLine} />
+            <DialogBox
+              speaker={line.speaker}
+              text={line.text}
+              canAdvance={hasMoreLines}
+              onNext={continueLine}
+              showClickHint={showClickHint}
+              onInteraction={() => setShowClickHint(false)}
+            />
             {!hasMoreLines && <ChoiceList choices={scene.choices} onSelect={selectChoice} />}
           </>
         )}

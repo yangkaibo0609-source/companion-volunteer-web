@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { endingCopy } from '../../data/gameScript'
 import { useGameStore } from '../../store/gameStore'
 import { countTone, getEndingLevel } from '../../utils/gameScore'
+import { ClosingReflectionSection } from './ClosingReflectionSection'
+import { DataBlackboardSection } from './DataBlackboardSection'
+import { InterviewTicketSection } from './InterviewTicketSection'
 import { SummaryReview3D } from './SummaryReview3D'
 
 type SummaryPageProps = {
@@ -48,19 +51,8 @@ function useAnimatedNumber(target: number, active: boolean, duration = 1400) {
   return value
 }
 
-function useSummaryStage(reducedMotion: boolean) {
+function useSummaryStage() {
   const [stage, setStage] = useState<SummaryStage>('scores')
-
-  useEffect(() => {
-    if (stage !== 'scores') return
-
-    const timeout = window.setTimeout(() => {
-      setStage('review')
-    }, reducedMotion ? 900 : 4300)
-
-    return () => window.clearTimeout(timeout)
-  }, [reducedMotion, stage])
-
   return [stage, setStage] as const
 }
 
@@ -81,7 +73,8 @@ export function SummaryPage({ onRestart }: SummaryPageProps) {
   const energy = useGameStore((state) => state.energy)
   const selectedChoices = useGameStore((state) => state.selectedChoices)
   const reducedMotion = useGameStore((state) => state.reducedMotion)
-  const [stage, setStage] = useSummaryStage(reducedMotion)
+  const [stage, setStage] = useSummaryStage()
+  const dataBlackboardRef = useRef<HTMLElement | null>(null)
 
   const endingLevel = getEndingLevel(trust, energy)
   const ending = endingCopy[endingLevel]
@@ -94,24 +87,34 @@ export function SummaryPage({ onRestart }: SummaryPageProps) {
 
   const scoreLead = useMemo(() => {
     if (trust >= 80 && energy >= 60) return '你留住了关系，也照顾到了自己的精力。'
-    if (trust >= 70) return '信任正在建立，接下来要继续照看自己的消耗。'
+    if (trust >= 70) return '信任正在建立，接下来要继续看见自己的消耗。'
     if (energy < 45) return '今天的陪护消耗不低，方法和边界都值得复盘。'
     return '今天的判断有起伏，翻开每一张卡会更容易看见原因。'
   }, [energy, trust])
+
+  const scrollToDataBlackboard = () => {
+    dataBlackboardRef.current?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
+  }
 
   return (
     <main className={`summary-page summary-page--${stage}`}>
       {stage === 'scores' && (
         <section className="summary-score-stage" aria-label="结算分数">
-          <div className="summary-stage-heading">
-            <p className="summary-kicker">今日陪护结算</p>
-            <h1>先看看你的信任值和精力值</h1>
-            <p>{scoreLead}</p>
-          </div>
+          <div className="summary-settlement">
+            <div className="summary-stage-heading">
+              <p className="summary-kicker">今日陪护结算</p>
+              <h1>{ending.title}</h1>
+              <p>{scoreLead}</p>
+            </div>
 
-          <div className="summary-grid summary-grid--scores">
-            <ScoreCard label="信任值" value={trust} animatedValue={animatedTrust} />
-            <ScoreCard label="精力值" value={energy} animatedValue={animatedEnergy} />
+            <div className="summary-grid summary-grid--scores">
+              <ScoreCard label="信任值" value={trust} animatedValue={animatedTrust} />
+              <ScoreCard label="精力值" value={energy} animatedValue={animatedEnergy} />
+            </div>
+
+            <button className="summary-settlement__continue" type="button" onClick={() => setStage('review')}>
+              查看今天的五次选择
+            </button>
           </div>
         </section>
       )}
@@ -123,29 +126,40 @@ export function SummaryPage({ onRestart }: SummaryPageProps) {
       )}
 
       {stage === 'ending' && (
-        <section className="summary-ending" aria-label="结算结束页">
-          <div className="summary-ending-copy">
-            <p className="summary-kicker">今日陪护记录</p>
-            <h1>{ending.title}</h1>
-            <p>{ending.body}</p>
-            <small>{ending.note}</small>
-          </div>
+        <>
+          <section className="summary-ending" aria-label="结算结束页">
+            <div className="summary-ending-copy">
+              <p className="summary-kicker">今日陪护记录</p>
+              <h1>{ending.title}</h1>
+              <p>{ending.body}</p>
+              <small>{ending.note}</small>
+              <p className="summary-transition-note">
+                你完成了一天的陪伴。<br />
+                但真实世界里的陪伴，不只发生一天。
+              </p>
+            </div>
 
-          <div className="summary-ending-panel" aria-label="陪护倾向统计">
-            <span>观察陪伴 {observingCount} 次</span>
-            <span>温和引导 {gentleCount} 次</span>
-            <span>直接介入 {forcefulCount} 次</span>
-          </div>
+            <div className="summary-ending-panel" aria-label="陪护倾向统计">
+              <span>观察陪伴 {observingCount} 次</span>
+              <span>温和引导 {gentleCount} 次</span>
+              <span>直接介入 {forcefulCount} 次</span>
+            </div>
 
-          <div className="summary-ending-actions">
-            <button className="secondary-action" type="button" aria-label="继续，暂未开放功能">
-              继续
-            </button>
-            <button className="primary-action" type="button" onClick={onRestart}>
-              再次体验
-            </button>
-          </div>
-        </section>
+            <div className="summary-ending-actions">
+              <button className="summary-data-scroll" type="button" onClick={scrollToDataBlackboard}>
+                <span>向下滑动，进入数据板块</span>
+                <i aria-hidden="true">↓</i>
+              </button>
+              <button className="summary-restart-action" type="button" onClick={onRestart}>
+                再次体验
+              </button>
+            </div>
+          </section>
+
+          <DataBlackboardSection sectionRef={dataBlackboardRef} />
+          <InterviewTicketSection />
+          <ClosingReflectionSection />
+        </>
       )}
     </main>
   )

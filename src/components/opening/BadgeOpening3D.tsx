@@ -405,7 +405,10 @@ export function BadgeOpening3D({ onEnter }: BadgeOpening3DProps) {
       <div className="badge-opening-wash" />
       <section className="badge-opening-copy" aria-label="游戏开场">
         <p>请慢一点。先观察，再靠近。</p>
-        <h1>成为一天陪护志愿者</h1>
+        <h1>
+          <span>成为</span>
+          <span>一天陪护志愿者</span>
+        </h1>
       </section>
       <div ref={mountRef} className="badge-canvas" aria-hidden="true" />
       <button className="badge-drag-target" type="button" {...dragHandlers}>

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { PointerTracker } from '../pointer/PointerTracker'
+import { AmbientSoundController } from './AmbientSoundController'
 import { SoundToggle } from './SoundToggle'
 import { TopStatusBar } from './TopStatusBar'
 
@@ -15,6 +16,7 @@ export function ExperienceShell({ children, mode, onRestart }: ExperienceShellPr
       <PointerTracker />
       {mode !== 'scene' && <TopStatusBar mode={mode} onRestart={onRestart} />}
       <SoundToggle />
+      <AmbientSoundController />
       {children}
     </div>
   )

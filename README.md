@@ -1,32 +1,42 @@
-# React + TypeScript + Vite
+# 陪护志愿者
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+一篇面向数据新闻比赛的互动叙事网页，关注心智障碍儿童及其家庭身边的志愿者：
 
-Currently, two official plugins are available:
+> 照亮他人的人，谁来照亮他们？
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+项目以一天陪护文字互动为入口，依次呈现陪护结算、数据黑板、访谈故事票根与主题收束。数据部分使用吊挂黑板交互，真实故事以可抽取的照片票根展开。
 
-## React Compiler
+## 在线体验
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+[https://companion-volunteer-story.netlify.app](https://companion-volunteer-story.netlify.app)
 
-## Expanding the Oxlint configuration
+## 技术栈
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- React 19 + TypeScript + Vite
+- Three.js
+- Zustand
+- D3、GSAP、Howler
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## 本地运行
+
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+构建与检查：
+
+```bash
+npm run lint
+npm run build
+```
+
+## 内容说明
+
+- 数据黑板文本依据项目文稿进行删减与拆分。
+- 访谈票根中的故事内容来自项目访谈材料。
+- 部分数据存在不同统计口径，具体记录见 `DATA_CONFLICTS.md`。
+
+## 部署
+
+项目通过 Netlify 持续部署，构建命令为 `npm run build`，发布目录为 `dist`。
