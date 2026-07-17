@@ -7667,3 +7667,65 @@ p,
     min-height: 420px;
   }
 }
+
+.choice-list.has-guide {
+  position: relative;
+}
+
+.choice-hand-guide {
+  align-items: center;
+  color: rgb(255 250 232 / 0.94);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  min-height: 42px;
+  pointer-events: none;
+}
+
+.choice-hand-guide span {
+  animation: choiceHandTap 1.4s ease-in-out infinite;
+  filter: sepia(0.35) saturate(0.78);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.choice-hand-guide strong {
+  font-size: 14px;
+}
+
+@keyframes choiceHandTap {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(7px) rotate(-4deg); }
+}
+
+@media (min-width: 1100px) {
+  .game-control-layer {
+    right: clamp(154px, 8vw, 178px);
+  }
+
+  .choice-list {
+    max-height: calc(100svh - 120px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 980px) {
+  .game-control-layer {
+    max-height: calc(100svh - 92px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+  }
+
+  .choice-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice-hand-guide span {
+    animation: none;
+  }
+}

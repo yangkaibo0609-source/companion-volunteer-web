@@ -66,7 +66,7 @@ export function GameScene({ onRestart }: GameSceneProps) {
               showClickHint={showClickHint}
               onInteraction={() => setShowClickHint(false)}
             />
-            {!hasMoreLines && <ChoiceList choices={scene.choices} onSelect={selectChoice} />}
+            {!hasMoreLines && <ChoiceList choices={scene.choices} onSelect={selectChoice} showGuide={currentSceneIndex === 0} />}
           </>
         )}
       </div>
