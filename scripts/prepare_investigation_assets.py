@@ -29,6 +29,16 @@ def prepare_photos() -> None:
         save_webp(source, ASSET_ROOT / "photos" / f"photo-{index:02d}.webp", (1920, 1600), 82)
 
 
+def prepare_new_photos() -> None:
+    photo_dir = RESOURCE_ROOT / "新增"
+    selected_photos = (
+        "微信图片_20260717131923_2279_24.jpg",
+        "微信图片_20260717131927_2280_24.jpg",
+    )
+    for index, source_name in enumerate(selected_photos, start=9):
+        save_webp(photo_dir / source_name, ASSET_ROOT / "photos" / f"photo-{index:02d}.webp", (1920, 1600), 82)
+
+
 def prepare_avatars() -> None:
     source = RESOURCE_ROOT / "微信图片_20260716104840_2240_24.png"
     destination = ASSET_ROOT / "avatars"
@@ -108,6 +118,7 @@ def copy_audio() -> None:
 
 if __name__ == "__main__":
     prepare_photos()
+    prepare_new_photos()
     prepare_avatars()
     prepare_story_images()
     copy_audio()

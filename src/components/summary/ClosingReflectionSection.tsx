@@ -1,17 +1,7 @@
-import { interviewStories } from '../../data/interviewStories'
-import type { CSSProperties } from 'react'
-
 export function ClosingReflectionSection() {
   return (
     <section className="closing-reflection-section" aria-label="照亮他人的人，谁来照亮他们">
       <div className="closing-reflection-section__glow" aria-hidden="true" />
-      <div className="closing-reflection-section__tickets" aria-hidden="true">
-        {interviewStories.slice(0, 4).map((story, index) => (
-          <span key={story.id} style={{ '--float-index': index } as CSSProperties}>
-            {story.title}
-          </span>
-        ))}
-      </div>
       <div className="closing-reflection-section__copy">
         <p className="summary-kicker">主题收束</p>
         <h2>照亮他人的人，谁来照亮他们？</h2>

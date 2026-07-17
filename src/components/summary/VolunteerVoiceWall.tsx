@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { voiceGroups } from '../../data/investigationData'
 
+type PlaybackState = {
+  groupId: string
+  clipIndex: number
+  playing: boolean
+}
+
+const idlePlayback: PlaybackState = { groupId: '', clipIndex: 0, playing: false }
+
 function formatDuration(duration?: number) {
   if (!duration || !Number.isFinite(duration)) return '--:--'
   const minutes = Math.floor(duration / 60)
@@ -10,16 +18,18 @@ function formatDuration(duration?: number) {
 export function VolunteerVoiceWall() {
   const sectionRef = useRef<HTMLElement | null>(null)
   const audioRefs = useRef(new Map<string, HTMLAudioElement>())
-  const [activeId, setActiveId] = useState('')
+  const [playback, setPlayback] = useState<PlaybackState>(idlePlayback)
   const [durations, setDurations] = useState<Record<string, number>>({})
-  const [failedIds, setFailedIds] = useState<Set<string>>(new Set())
+  const [elapsedByGroup, setElapsedByGroup] = useState<Record<string, number>>({})
+  const [failedGroups, setFailedGroups] = useState<Set<string>>(new Set())
 
   const pauseAll = useCallback((reset = true) => {
     audioRefs.current.forEach((audio) => {
       audio.pause()
       if (reset) audio.currentTime = 0
     })
-    setActiveId('')
+    setPlayback(idlePlayback)
+    if (reset) setElapsedByGroup({})
   }, [])
 
   useEffect(() => {
@@ -41,21 +51,40 @@ export function VolunteerVoiceWall() {
     }
   }, [pauseAll])
 
-  const toggleClip = async (clipId: string) => {
-    const audio = audioRefs.current.get(clipId)
+  const toggleGroup = async (group: (typeof voiceGroups)[number]) => {
+    const sameGroup = playback.groupId === group.id
+    let clipIndex = sameGroup ? playback.clipIndex : 0
+    let audio = audioRefs.current.get(group.clips[clipIndex].id)
     if (!audio) return
-    if (activeId === clipId && !audio.paused) {
+
+    if (sameGroup && playback.playing && !audio.paused) {
       audio.pause()
-      setActiveId('')
+      setPlayback((current) => ({ ...current, playing: false }))
       return
     }
 
-    pauseAll()
+    if (!sameGroup) {
+      audioRefs.current.forEach((item) => {
+        item.pause()
+        item.currentTime = 0
+      })
+      setElapsedByGroup((current) => ({ ...current, [group.id]: 0 }))
+    } else if (audio.ended) {
+      group.clips.forEach((clip) => {
+        const item = audioRefs.current.get(clip.id)
+        if (item) item.currentTime = 0
+      })
+      clipIndex = 0
+      audio = audioRefs.current.get(group.clips[0].id)
+      if (!audio) return
+      setElapsedByGroup((current) => ({ ...current, [group.id]: 0 }))
+    }
+
     try {
       await audio.play()
-      setActiveId(clipId)
+      setPlayback({ groupId: group.id, clipIndex, playing: true })
     } catch {
-      setFailedIds((current) => new Set(current).add(clipId))
+      setFailedGroups((current) => new Set(current).add(group.id))
     }
   }
 
@@ -64,43 +93,74 @@ export function VolunteerVoiceWall() {
       <header className="investigation-heading investigation-heading--compact">
         <p className="summary-kicker">七组真实语音</p>
         <h2 id="volunteer-voice-title">听见他们自己的声音</h2>
-        <p>点击语音条播放；新的语音会接替正在播放的内容。</p>
+        <p>每一张人物卡，保存一段完整讲述。</p>
       </header>
 
       <div className="voice-portrait-grid">
-        {voiceGroups.map((group) => (
-          <article className="voice-portrait" key={group.id}>
-            <div className="voice-portrait__identity">
-              <img alt="" src={group.avatar} />
-              <div><span>受访者 {group.id}</span><strong>{group.label}</strong></div>
-            </div>
-            <div className="voice-portrait__clips">
-              {group.clips.map((clip, clipIndex) => {
-                const isPlaying = activeId === clip.id
-                const failed = failedIds.has(clip.id)
-                return (
-                  <div className="voice-clip" key={clip.id}>
-                    {!failed && (
-                      <button
-                        aria-label={`${isPlaying ? '暂停' : '播放'}${group.label}第${clipIndex + 1}段语音`}
-                        className={isPlaying ? 'is-playing' : ''}
-                        onClick={() => void toggleClip(clip.id)}
-                        type="button"
-                      >
-                        <span className="voice-clip__play" aria-hidden="true">{isPlaying ? 'Ⅱ' : '▶'}</span>
-                        <span className="voice-clip__waves" aria-hidden="true"><i /><i /><i /><i /><i /></span>
-                        <span>{formatDuration(durations[clip.id])}</span>
-                      </button>
-                    )}
+        {voiceGroups.map((group) => {
+          const totalDuration = group.clips.reduce((total, clip) => total + (durations[clip.id] ?? 0), 0)
+          const elapsed = elapsedByGroup[group.id] ?? 0
+          const progress = totalDuration > 0 ? Math.min(elapsed / totalDuration, 1) : 0
+          const isPlaying = playback.groupId === group.id && playback.playing
+          const failed = failedGroups.has(group.id)
+
+          return (
+            <article className="voice-portrait" key={group.id}>
+              <div className="voice-portrait__identity">
+                <img alt="" src={group.avatar} />
+                <div><span>受访者 {group.id}</span><strong>{group.label}</strong></div>
+              </div>
+
+              <div className="voice-portrait__clips">
+                <div className="voice-clip">
+                  <button
+                    aria-label={`${isPlaying ? '暂停' : '播放'}${group.label}语音`}
+                    className={isPlaying ? 'is-playing' : ''}
+                    disabled={failed}
+                    onClick={() => void toggleGroup(group)}
+                    type="button"
+                  >
+                    <span className="voice-clip__play" aria-hidden="true">{isPlaying ? 'Ⅱ' : '▶'}</span>
+                    <span className="voice-clip__waves" aria-hidden="true"><i /><i /><i /><i /><i /></span>
+                    <span className="voice-clip__progress" aria-hidden="true"><i style={{ width: `${progress * 100}%` }} /></span>
+                    <span className="voice-clip__duration">{failed ? '暂不可用' : formatDuration(totalDuration)}</span>
+                  </button>
+
+                  {group.clips.map((clip, clipIndex) => (
                     <audio
-                      className={failed ? 'voice-clip__fallback is-visible' : 'voice-clip__fallback'}
-                      controls={failed}
-                      onEnded={() => setActiveId('')}
+                      className="voice-sequence-audio"
+                      key={clip.id}
+                      onEnded={() => {
+                        const nextClip = group.clips[clipIndex + 1]
+                        if (!nextClip) {
+                          setElapsedByGroup((current) => ({ ...current, [group.id]: totalDuration }))
+                          setPlayback({ groupId: group.id, clipIndex, playing: false })
+                          return
+                        }
+
+                        const nextAudio = audioRefs.current.get(nextClip.id)
+                        if (!nextAudio) return
+                        nextAudio.currentTime = 0
+                        setPlayback({ groupId: group.id, clipIndex: clipIndex + 1, playing: true })
+                        void nextAudio.play().catch(() => {
+                          setFailedGroups((current) => new Set(current).add(group.id))
+                          setPlayback({ groupId: group.id, clipIndex: clipIndex + 1, playing: false })
+                        })
+                      }}
                       onLoadedMetadata={(event) => {
                         const duration = event.currentTarget.duration
                         setDurations((current) => ({ ...current, [clip.id]: duration }))
                       }}
-                      onPause={() => activeId === clip.id && setActiveId('')}
+                      onTimeUpdate={(event) => {
+                        const currentTime = event.currentTarget.currentTime
+                        const precedingDuration = group.clips
+                          .slice(0, clipIndex)
+                          .reduce((total, precedingClip) => total + (durations[precedingClip.id] ?? 0), 0)
+                        setElapsedByGroup((current) => ({
+                          ...current,
+                          [group.id]: precedingDuration + currentTime,
+                        }))
+                      }}
                       preload="metadata"
                       ref={(node) => {
                         if (node) audioRefs.current.set(clip.id, node)
@@ -108,12 +168,12 @@ export function VolunteerVoiceWall() {
                       }}
                       src={clip.src}
                     />
-                  </div>
-                )
-              })}
-            </div>
-          </article>
-        ))}
+                  ))}
+                </div>
+              </div>
+            </article>
+          )
+        })}
       </div>
     </section>
   )

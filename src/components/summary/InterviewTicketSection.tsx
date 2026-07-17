@@ -30,13 +30,6 @@ function TicketTransition({ onEnter }: { onEnter: () => void }) {
           抽出一张故事票根
         </button>
       </div>
-      <div className="ticket-transition-screen__edges" aria-hidden="true">
-        {interviewStories.slice(0, 4).map((story, index) => (
-          <span key={story.id} style={{ '--edge-index': index } as CSSProperties}>
-            {story.title}
-          </span>
-        ))}
-      </div>
     </div>
   )
 }

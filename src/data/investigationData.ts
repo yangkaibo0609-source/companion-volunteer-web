@@ -14,6 +14,8 @@ import photo05 from '../assets/investigation/photos/photo-05.webp'
 import photo06 from '../assets/investigation/photos/photo-06.webp'
 import photo07 from '../assets/investigation/photos/photo-07.webp'
 import photo08 from '../assets/investigation/photos/photo-08.webp'
+import photo09 from '../assets/investigation/photos/photo-09.webp'
+import photo10 from '../assets/investigation/photos/photo-10.webp'
 import voice011 from '../assets/investigation/audio/voices/voice-01-1.mp3'
 import voice012 from '../assets/investigation/audio/voices/voice-01-2.mp3'
 import voice021 from '../assets/investigation/audio/voices/voice-02-1.mp3'
@@ -25,7 +27,7 @@ import voice061 from '../assets/investigation/audio/voices/voice-06-1.mp3'
 import voice062 from '../assets/investigation/audio/voices/voice-06-2.mp3'
 import voice071 from '../assets/investigation/audio/voices/voice-07-1.mp3'
 
-export const investigationPhotos = [photo01, photo02, photo03, photo04, photo05, photo06, photo07, photo08]
+export const investigationPhotos = [photo01, photo02, photo03, photo04, photo05, photo06, photo07, photo08, photo09, photo10]
 
 export const investigationAvatars = [avatar01, avatar02, avatar03, avatar04, avatar05, avatar06, avatar07, avatar08]
 

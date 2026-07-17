@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type RefObject } from 'react'
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { dataBlackboardScenes, type BlackboardMetric, type DataBlackboardScene as Scene, type SourceParagraph as SourceParagraphData } from '../../data/dataBlackboard'
 import { dataSectionCovers, type SectionCoverAsset } from '../../data/sectionCovers'
 import { SectionCover } from './SectionCover'
@@ -129,118 +129,50 @@ function ChalkTimeline({ items, visible }: { items?: string[]; visible: boolean 
   )
 }
 
-function HangingBlackboard({
-  scene,
-  open,
-  onToggle,
-}: {
-  scene: Scene
-  open: boolean
-  onToggle: () => void
-}) {
-  const [pull, setPull] = useState(0)
-  const [dragging, setDragging] = useState(false)
-  const [settling, setSettling] = useState(false)
-  const startYRef = useRef<number | null>(null)
-  const movedRef = useRef(false)
-
-  const triggerToggle = () => {
-    setSettling(true)
-    window.setTimeout(() => setSettling(false), 760)
-    onToggle()
-  }
-
-  const releaseBoard = (shouldToggle: boolean) => {
-    startYRef.current = null
-    movedRef.current = false
-    setDragging(false)
-    setPull(0)
-    if (shouldToggle) triggerToggle()
-  }
-
-  const handlePointerDown = (event: PointerEvent<HTMLButtonElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return
-    startYRef.current = event.clientY
-    movedRef.current = false
-    setDragging(true)
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-
-  const handlePointerMove = (event: PointerEvent<HTMLButtonElement>) => {
-    if (startYRef.current == null) return
-    const distance = Math.max(0, event.clientY - startYRef.current)
-    if (distance > 4) movedRef.current = true
-    const limit = open ? 58 : 92
-    setPull(Math.min(distance / limit, 1))
-  }
-
-  const handlePointerUp = (event: PointerEvent<HTMLButtonElement>) => {
-    if (startYRef.current == null) return
-    event.currentTarget.releasePointerCapture(event.pointerId)
-    releaseBoard(!movedRef.current || (!open && pull > 0.46) || (open && pull > 0.62))
-  }
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return
-    event.preventDefault()
-    triggerToggle()
-  }
-
+function HangingBlackboard({ scene }: { scene: Scene }) {
   return (
-    <button
-      className={`data-blackboard${open ? ' is-open' : ''}${dragging ? ' is-dragging' : ''}${settling ? ' is-settling' : ''}${pull > 0.46 ? ' is-armed' : ''}`}
-      style={{ '--board-pull': pull } as CSSProperties}
-      type="button"
-      onKeyDown={handleKeyDown}
-      onPointerCancel={() => releaseBoard(false)}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-    >
+    <div className="data-blackboard is-open is-static" aria-label={`${scene.label}：${scene.question}`}>
       <span className="data-blackboard__ropes" aria-hidden="true" />
       <span className="data-blackboard__surface">
         <span className="data-blackboard__label">{scene.label}</span>
         <strong>{scene.question}</strong>
-        <span className="data-blackboard__cue" aria-hidden="true">
-          <i>点击</i>
-          <b>☝</b>
-        </span>
-        <span className="data-blackboard__hint">{open ? '再次点击可收起黑板' : '轻点黑板，展开数据'}</span>
         <span className="data-blackboard__tray" aria-hidden="true" />
       </span>
-    </button>
+    </div>
   )
 }
 
 function DataBlackboardScene({ scene }: { scene: Scene }) {
-  const [open, setOpen] = useState(false)
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null)
 
   return (
-    <section id={`${scene.id}-blackboard`} className={`data-blackboard-scene data-blackboard-scene--${scene.id}${open ? ' is-open' : ''}`}>
+    <section id={`${scene.id}-blackboard`} className={`data-blackboard-scene data-blackboard-scene--${scene.id} is-open`}>
       <div className="data-blackboard-scene__board">
-        <HangingBlackboard scene={scene} open={open} onToggle={() => setOpen((value) => !value)} />
+        <HangingBlackboard scene={scene} />
       </div>
 
-      <div className="data-blackboard-scene__notes" aria-live="polite">
-        <div className={`chalk-notes-paper${open ? ' is-visible' : ''}`}>
+      <div className="data-blackboard-scene__notes">
+        <div className="chalk-notes-paper is-visible">
           <span className="chalk-notes-paper__pin" aria-hidden="true" />
-          <ChalkReveal paragraphs={scene.paragraphs} visible={open} />
-          <div className={`chalk-metric-cluster${open ? ' is-visible' : ''}`}>
+          <ChalkReveal paragraphs={scene.paragraphs} visible />
+          <div
+            className="chalk-metric-cluster is-visible"
+            style={{ '--metric-count': Math.min(scene.metrics.length, 4) } as CSSProperties}
+          >
             {scene.metrics.map((metric, index) => (
               <ChalkMetric
                 key={`${metric.value}${metric.label}`}
                 metric={metric}
                 index={index}
                 selected={selectedMetric === `${metric.value}${metric.label}`}
-                visible={open}
+                visible
                 onSelect={() => setSelectedMetric((current) => (current === `${metric.value}${metric.label}` ? null : `${metric.value}${metric.label}`))}
               />
             ))}
           </div>
-          <ChalkTimeline items={scene.timeline} visible={open} />
+          <ChalkTimeline items={scene.timeline} visible />
           {scene.closing && (
-            <div className={`chalk-closing${open ? ' is-visible' : ''}`}>
+            <div className="chalk-closing is-visible">
               <SourceParagraph index={scene.paragraphs.length} paragraph={scene.closing} />
             </div>
           )}

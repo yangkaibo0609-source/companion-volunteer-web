@@ -146,10 +146,11 @@ export function SummaryPage({ onRestart }: SummaryPageProps) {
             </div>
 
             <div className="summary-ending-actions">
-              <button className="secondary-action secondary-action--clickable" type="button" onClick={scrollToDataBlackboard}>
-                继续看见数据背后的人
+              <button className="summary-data-scroll" type="button" onClick={scrollToDataBlackboard}>
+                <span>向下滑动，进入数据板块</span>
+                <i aria-hidden="true">↓</i>
               </button>
-              <button className="primary-action" type="button" onClick={onRestart}>
+              <button className="summary-restart-action" type="button" onClick={onRestart}>
                 再次体验
               </button>
             </div>
