@@ -45,13 +45,15 @@ function InlineDataChart({ chart }: { chart: NonNullable<SourceParagraphData['ch
       {shouldLoad && !failed ? (
         <>
           {!loaded && <span className="inline-data-chart__status">图表正在展开</span>}
-          <iframe
-            src={chart.src}
-            title={chart.title}
-            loading="lazy"
-            onError={() => setFailed(true)}
-            onLoad={() => setLoaded(true)}
-          />
+          <div className="inline-data-chart__viewport">
+            <iframe
+              src={chart.src}
+              title={chart.title}
+              loading="lazy"
+              onError={() => setFailed(true)}
+              onLoad={() => setLoaded(true)}
+            />
+          </div>
         </>
       ) : failed ? (
         <div className="inline-data-chart__fallback">
@@ -68,13 +70,15 @@ function InlineDataChart({ chart }: { chart: NonNullable<SourceParagraphData['ch
 function SourceParagraph({ paragraph, index }: { paragraph: SourceParagraphData; index: number }) {
   return (
     <>
-      <p style={{ '--line-index': index } as CSSProperties}>
-        {paragraph.segments.map((segment, segmentIndex) => (
-          <span className={segment.emphasis ? 'source-emphasis' : undefined} key={`${segment.text}-${segmentIndex}`}>
-            {segment.text}
-          </span>
-        ))}
-      </p>
+      {paragraph.segments.length > 0 && (
+        <p style={{ '--line-index': index } as CSSProperties}>
+          {paragraph.segments.map((segment, segmentIndex) => (
+            <span className={segment.emphasis ? 'source-emphasis' : undefined} key={`${segment.text}-${segmentIndex}`}>
+              {segment.text}
+            </span>
+          ))}
+        </p>
+      )}
       {paragraph.chart && <InlineDataChart chart={paragraph.chart} />}
     </>
   )
@@ -83,7 +87,7 @@ function SourceParagraph({ paragraph, index }: { paragraph: SourceParagraphData;
 function ChalkReveal({ paragraphs, visible }: { paragraphs: SourceParagraphData[]; visible: boolean }) {
   return (
     <div className={`chalk-lines${visible ? ' is-visible' : ''}`}>
-      {paragraphs.map((paragraph, index) => <SourceParagraph index={index} key={paragraph.segments.map((segment) => segment.text).join('')} paragraph={paragraph} />)}
+      {paragraphs.map((paragraph, index) => <SourceParagraph index={index} key={`${index}-${paragraph.segments.map((segment) => segment.text).join('')}`} paragraph={paragraph} />)}
     </div>
   )
 }
@@ -170,6 +174,13 @@ function DataBlackboardScene({ scene }: { scene: Scene }) {
               />
             ))}
           </div>
+          {scene.postscript && (
+            <section className="chalk-postscript" aria-labelledby={`${scene.id}-postscript-title`}>
+              <ChalkReveal paragraphs={scene.postscript.lead} visible />
+              <h3 id={`${scene.id}-postscript-title`}>{scene.postscript.heading}</h3>
+              <ChalkReveal paragraphs={scene.postscript.paragraphs} visible />
+            </section>
+          )}
           <ChalkTimeline items={scene.timeline} visible />
           {scene.closing && (
             <div className="chalk-closing is-visible">
