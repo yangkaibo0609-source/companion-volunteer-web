@@ -7648,6 +7648,19 @@ p,
   margin: clamp(42px, 6vh, 72px) 0 24px;
 }
 
+.chalk-postscript > .chalk-lines {
+  max-width: none;
+}
+
+.chalk-postscript > .chalk-lines p {
+  max-width: 46em;
+}
+
+.chalk-postscript .inline-data-chart {
+  max-width: none;
+  width: 100%;
+}
+
 @media (max-width: 760px) {
   .data-blackboard-scene.is-open {
     gap: 36px;
@@ -7711,6 +7724,12 @@ p,
 }
 
 @media (max-width: 980px) {
+  .experience-shell--scene .sound-toggle {
+    bottom: auto;
+    right: 14px;
+    top: 14px;
+  }
+
   .game-control-layer {
     max-height: calc(100svh - 92px);
     overflow-y: auto;
@@ -7727,5 +7746,18 @@ p,
 @media (prefers-reduced-motion: reduce) {
   .choice-hand-guide span {
     animation: none;
+  }
+}
+
+.experience-shell--summary .sound-toggle {
+  bottom: auto;
+  right: 28px;
+  top: 76px;
+}
+
+@media (max-width: 980px) {
+  .experience-shell--summary .sound-toggle {
+    right: 14px;
+    top: 14px;
   }
 }
