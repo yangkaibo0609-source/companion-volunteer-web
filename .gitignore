@@ -15,6 +15,10 @@ backups/
 cover-unzip/
 source-docs/
 .codex-temp/
+.playwright-cli/
+.superpowers/
+test-results/
+*.pid
 交互游戏图片/
 .netlify/
 
