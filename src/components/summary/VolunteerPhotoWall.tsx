@@ -2,9 +2,9 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { investigationPhotos } from '../../data/investigationData'
 
 const trackOrders = [
-  [0, 1, 8, 2, 3, 4, 9, 5, 6, 7],
-  [4, 5, 9, 6, 7, 0, 8, 1, 2, 3],
-  [9, 7, 6, 5, 8, 4, 3, 2, 1, 0],
+  [0, 1, 10, 8, 2, 3, 11, 4, 9, 5, 12, 6, 7],
+  [4, 11, 5, 9, 6, 12, 7, 0, 10, 8, 1, 2, 3],
+  [12, 9, 7, 6, 5, 11, 8, 4, 3, 10, 2, 1, 0],
 ]
 
 export function VolunteerPhotoWall() {
@@ -47,7 +47,7 @@ export function VolunteerPhotoWall() {
               <div className="photo-wall-track__stream">
                 {stream.map((photoIndex, copyIndex) => (
                   <button
-                    aria-label={`查看现场照片 ${photoIndex + 1}`}
+                    aria-label={`查看${investigationPhotos[photoIndex].alt}`}
                     className="photo-wall-item"
                     key={`${photoIndex}-${copyIndex}`}
                     onClick={(event) => {
@@ -56,7 +56,7 @@ export function VolunteerPhotoWall() {
                     }}
                     type="button"
                   >
-                    <img alt="" loading="lazy" src={investigationPhotos[photoIndex]} />
+                    <img alt={investigationPhotos[photoIndex].alt} loading="lazy" src={investigationPhotos[photoIndex].src} />
                   </button>
                 ))}
               </div>
@@ -68,7 +68,7 @@ export function VolunteerPhotoWall() {
       {selectedIndex != null && (
         <div className="photo-lightbox" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && closeLightbox()}>
           <figure role="dialog" aria-label={`现场照片 ${selectedIndex + 1}`} aria-modal="true">
-            <img alt="授权公开展示的志愿服务现场" src={investigationPhotos[selectedIndex]} />
+            <img alt={investigationPhotos[selectedIndex].alt} src={investigationPhotos[selectedIndex].src} />
             <button autoFocus type="button" onClick={closeLightbox}>关闭照片</button>
           </figure>
         </div>
