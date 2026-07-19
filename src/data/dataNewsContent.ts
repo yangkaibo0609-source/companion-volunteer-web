@@ -28,6 +28,11 @@ export type DataBlackboardScene = {
 const paragraph = (segments: SourceSegment[], chart?: BlackboardChart): SourceParagraph => ({ segments, chart })
 const chart = (title: string, src: string): BlackboardChart => ({ title, src })
 
+export const volunteerHighFrequencyChart = chart(
+  '访谈高频词',
+  'https://dycharts.com/xshow/index.html?id=c_b0a628793cff844051f2a5d482d3c5eb',
+)
+
 export const dataBlackboardScenes: DataBlackboardScene[] = [
   {
     id: 'group', part: 1, label: '数据黑板 01', question: '心智障碍者：一个庞大却沉默的群体', sourceSection: '心智障碍者：一个庞大却沉默的群体',
@@ -108,4 +113,20 @@ export const dataBlackboardScenes: DataBlackboardScene[] = [
     metrics: [{ value: '63.86%', label: '63.86%的公益人正在抑郁中挣扎' }, { value: '6.6万', label: '6.6万的年薪撑不起一份体面的生活' }, { value: '2.68亿', label: '2.68亿注册志愿者中，活跃的仅有7704万' }],
     closing: paragraph([{ text: '接下来，让我们听一听，那些声音。' }]),
   },
+]
+
+export const dataBlackboardChartSources = [
+  ...new Set(
+    [
+      ...dataBlackboardScenes.flatMap((scene) =>
+        [
+          ...scene.paragraphs,
+          ...(scene.postscript?.lead ?? []),
+          ...(scene.postscript?.paragraphs ?? []),
+          ...(scene.closing ? [scene.closing] : []),
+        ].flatMap((paragraph) => (paragraph.chart ? [paragraph.chart.src] : [])),
+      ),
+      volunteerHighFrequencyChart.src,
+    ],
+  ),
 ]

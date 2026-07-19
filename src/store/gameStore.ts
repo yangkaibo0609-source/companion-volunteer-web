@@ -30,7 +30,7 @@ const initialState = {
   energy: INITIAL_ENERGY,
   selectedChoices: [] as ChoiceRecord[],
   activeFeedback: null as ChoiceRecord | null,
-  soundEnabled: false,
+  soundEnabled: true,
   reducedMotion: false,
 }
 

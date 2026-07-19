@@ -4,7 +4,7 @@
 
 **Goal:** 将访谈高频词图表 iframe 的固定画布水平居中到现有卡片中，同时保持卡片尺寸和其他图表不变。
 
-**Architecture:** 复用现有 `.inline-data-chart--standalone` 标记，在 CSS 层只作用于该卡片的 viewport iframe。iframe 在宽屏上限制为 Dycharts 的实际画布宽度并以 50% 定位，窄屏上由 `min(100%, 920px)` 自动降为容器宽度。
+**Architecture:** 复用现有 `.inline-data-chart--standalone` 标记，在 CSS 层只作用于该卡片的 viewport iframe。iframe 保持 100% 宽度，以 50% 中心定位后再向右偏移约 1/12 宽度，使 Dycharts 内部约 5/6 宽度的画布在卡片中左右留白相等。
 
 **Tech Stack:** React 19, TypeScript, CSS, Node assertion script, Playwright CLI.
 
@@ -32,17 +32,18 @@ Expected: FAIL at the new regular expression assertion because the current style
 **Files:**
 - Modify: `src/index.css` near the existing `.inline-data-chart--standalone` rules
 
-- [ ] **Step 1: Add the minimal CSS rule**
+- [x] **Step 1: Add the minimal CSS rule**
 
 ```css
 .inline-data-chart--standalone .inline-data-chart__viewport iframe {
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(100%, 920px);
+  left: 8.333%;
+  right: auto;
+  transform: none;
+  width: 100%;
 }
 ```
 
-- [ ] **Step 2: Run the verifier and confirm it passes**
+- [x] **Step 2: Run the verifier and confirm it passes**
 
 Run: `npm run verify:update`
 
@@ -53,14 +54,14 @@ Expected: `Requested update assertions passed`.
 **Files:**
 - No additional source files
 
-- [ ] **Step 1: Open the summary flow in Playwright and capture desktop measurements**
+- [x] **Step 1: Open the summary flow in Playwright and capture desktop measurements**
 
-Navigate to `http://127.0.0.1:4173/?qa=summary`, reach the data section, then evaluate the standalone figure, viewport, and iframe rectangles. Confirm the iframe center is within 1px of the viewport center and capture `output/playwright/highfreq-centered-desktop.png`.
+Navigate to `http://127.0.0.1:4173/?qa=summary`, reach the data section, then evaluate the standalone figure, viewport, and iframe rectangles. Confirm the iframe begins 1/12 of the viewport width to the right, so the Dycharts canvas has equal left and right margins inside the card.
 
-- [ ] **Step 2: Repeat at a mobile viewport**
+- [x] **Step 2: Repeat at a mobile viewport**
 
-Use a 390px-wide viewport. Confirm the iframe width equals the viewport width, no horizontal overflow is introduced, and capture `output/playwright/highfreq-centered-mobile.png`.
+Use a 390px-wide viewport. Confirm the iframe width equals the viewport width, the 1/12 offset is applied, and no horizontal overflow is introduced.
 
-- [ ] **Step 3: Run the full checks**
+- [x] **Step 3: Run the full checks**
 
 Run `npx tsc -b --pretty false`, `npm run lint`, `npm run build`, and `git diff --check`. Remove temporary `output/` artifacts after inspection.

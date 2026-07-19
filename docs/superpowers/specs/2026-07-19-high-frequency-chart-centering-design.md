@@ -6,7 +6,7 @@
 
 ## 方案
 
-仅为 `.inline-data-chart--standalone` 的 iframe 设置 `width: min(100%, 920px)`，并使用 `left: 50%` 与 `translateX(-50%)` 在 viewport 内水平居中。卡片尺寸、图表高度、标题和数据内容保持不变；当 viewport 小于 920px 时 iframe 自动使用 100% 宽度，因此移动端不会出现横向溢出。
+仅为 `.inline-data-chart--standalone` 的 iframe 保持 `width: 100%`，清除基础 `inset: 0` 带来的 `right` 约束，并使用 `left: 8.333%`、`transform: none` 向右平移约 1/12 宽度。Dycharts 内部约按 iframe 的 5/6 宽度绘制固定画布，这个偏移会让左右空白相等，不放大、不裁切词云内容；父级继续裁切溢出，卡片尺寸、图表高度、标题和数据内容保持不变。
 
 ## 验证
 

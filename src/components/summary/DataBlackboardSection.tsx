@@ -1,5 +1,5 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
-import { dataBlackboardScenes, type BlackboardMetric, type DataBlackboardScene as Scene, type SourceParagraph as SourceParagraphData } from '../../data/dataBlackboard'
+import { Fragment, useEffect, useState, type CSSProperties, type RefObject } from 'react'
+import { dataBlackboardScenes, type BlackboardMetric, type DataBlackboardScene as Scene, type SourceParagraph as SourceParagraphData, volunteerHighFrequencyChart } from '../../data/dataBlackboard'
 import { dataSectionCovers, type SectionCoverAsset } from '../../data/sectionCovers'
 import { SectionCover } from './SectionCover'
 import { VolunteerMessageWall } from './VolunteerMessageWall'
@@ -10,61 +10,18 @@ type DataBlackboardSectionProps = {
   sectionRef?: RefObject<HTMLElement | null>
 }
 
-function InlineDataChart({ chart }: { chart: NonNullable<SourceParagraphData['chart']> }) {
-  const chartRef = useRef<HTMLDivElement | null>(null)
-  const [shouldLoad, setShouldLoad] = useState(false)
-  const [failed, setFailed] = useState(false)
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    const element = chartRef.current
-    if (!element || shouldLoad) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return
-        setShouldLoad(true)
-        observer.disconnect()
-      },
-      { rootMargin: '1100px 0px' },
-    )
-
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [shouldLoad])
-
-  useEffect(() => {
-    if (!shouldLoad || loaded || failed) return
-    const timeout = window.setTimeout(() => setFailed(true), 16000)
-    return () => window.clearTimeout(timeout)
-  }, [failed, loaded, shouldLoad])
-
+function InlineDataChart({ chart, className }: { chart: NonNullable<SourceParagraphData['chart']>; className?: string }) {
   return (
-    <figure className={`inline-data-chart${loaded ? ' is-loaded' : ''}`} ref={chartRef}>
-      <figcaption>{chart.title}</figcaption>
-      {shouldLoad && !failed ? (
-        <>
-          {!loaded && <span className="inline-data-chart__status">图表正在展开</span>}
-          <div className="inline-data-chart__viewport">
-            <iframe
-              src={chart.src}
-              title={chart.title}
-              loading="lazy"
-              onError={() => setFailed(true)}
-              onLoad={() => setLoaded(true)}
-            />
-          </div>
-        </>
-      ) : failed ? (
-        <div className="inline-data-chart__fallback">
-          <strong>{chart.title}</strong>
-          <a href={chart.src} rel="noreferrer" target="_blank">打开原始图表</a>
-        </div>
-      ) : (
-        <span aria-hidden="true" className="inline-data-chart__loading">图表正在展开</span>
-      )}
+    <figure aria-label={chart.title} className={`inline-data-chart${className ? ` ${className}` : ''}`}>
+      <div className="inline-data-chart__viewport">
+        <iframe src={chart.src} title={chart.title} loading="eager" />
+      </div>
     </figure>
   )
+}
+
+function VolunteerHighFrequencyChart() {
+  return <InlineDataChart chart={volunteerHighFrequencyChart} className="inline-data-chart--standalone" />
 }
 
 function SourceParagraph({ paragraph, index }: { paragraph: SourceParagraphData; index: number }) {
@@ -236,6 +193,7 @@ export function DataBlackboardSection({ sectionRef }: DataBlackboardSectionProps
             {scene.id === 'volunteers' && (
               <>
                 <VolunteerPhotoWall />
+                <VolunteerHighFrequencyChart />
                 <VolunteerVoiceWall />
               </>
             )}

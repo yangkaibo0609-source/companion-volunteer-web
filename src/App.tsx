@@ -5,11 +5,29 @@ import { BadgeOpening3D } from './components/opening/BadgeOpening3D'
 import { SectionCover } from './components/summary/SectionCover'
 import { SummaryPage } from './components/summary/SummaryPage'
 import { characterAssets, openingBadgeAssets, sceneAssets } from './data/assetMap'
+import { dataBlackboardChartSources } from './data/dataBlackboard'
 import { mainSectionCover } from './data/sectionCovers'
 import { useGameStore } from './store/gameStore'
 import { preloadImages } from './utils/assetPreload'
 
 const primaryAssets = [...Object.values(sceneAssets), ...Object.values(characterAssets), ...Object.values(openingBadgeAssets), mainSectionCover.webpImage]
+
+function ChartPreloader() {
+  return (
+    <div aria-hidden="true" className="chart-preloader">
+      {dataBlackboardChartSources.map((src, index) => (
+        <iframe
+          data-dycharts-preload=""
+          key={src}
+          loading="eager"
+          src={src}
+          tabIndex={-1}
+          title={`图表预加载 ${index + 1}`}
+        />
+      ))}
+    </div>
+  )
+}
 
 function App() {
   const [isReady, setIsReady] = useState(false)
@@ -19,6 +37,24 @@ function App() {
   const completeOpening = useGameStore((state) => state.completeOpening)
   const restart = useGameStore((state) => state.restart)
   const setReducedMotion = useGameStore((state) => state.setReducedMotion)
+
+  useEffect(() => {
+    const existingSources = new Set(
+      Array.from(document.head.querySelectorAll<HTMLLinkElement>('link[data-dycharts-prefetch]')).map((link) => link.href),
+    )
+    const links = dataBlackboardChartSources
+      .filter((src) => !existingSources.has(src))
+      .map((src) => {
+        const link = document.createElement('link')
+        link.rel = 'prefetch'
+        link.href = src
+        link.dataset.dychartsPrefetch = 'true'
+        document.head.append(link)
+        return link
+      })
+
+    return () => links.forEach((link) => link.remove())
+  }, [])
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -84,6 +120,7 @@ function App() {
 
   return (
     <ExperienceShell mode={shellMode} onRestart={handleRestart}>
+      <ChartPreloader />
       {phase === 'opening' && !openingCoverSeen && (
         <SectionCover
           ariaLabel={mainSectionCover.ariaLabel}

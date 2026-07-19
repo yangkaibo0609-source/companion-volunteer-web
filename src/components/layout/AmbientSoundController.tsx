@@ -74,29 +74,45 @@ export function AmbientSoundController() {
   const audioRef = useRef<ManagedAudio | null>(null)
   const musicRef = useRef<Howl | null>(null)
   const musicStopTimerRef = useRef<number | null>(null)
+  const musicGestureCleanupRef = useRef<(() => void) | null>(null)
   const lastTextKey = useRef('')
 
   useEffect(() => {
+    musicGestureCleanupRef.current?.()
+    musicGestureCleanupRef.current = null
+
     if (soundEnabled) {
       if (musicStopTimerRef.current) {
         window.clearTimeout(musicStopTimerRef.current)
         musicStopTimerRef.current = null
       }
 
-      if (!musicRef.current) {
-        const music = new Howl({ src: [backgroundMusic], html5: true, loop: true, volume: 0 })
-        musicRef.current = music
-        music.once('play', () => music.fade(0, 0.28, 900))
-        music.play()
+      const existingMusic = musicRef.current
+      const music = existingMusic ?? new Howl({ src: [backgroundMusic], html5: true, loop: true, volume: 0 })
+      musicRef.current = music
+      if (!existingMusic) music.once('play', () => music.fade(0, 0.28, 900))
+      if (!music.playing()) music.play()
+      if (music.playing()) music.fade(music.volume(), 0.28, 450)
+
+      const tryPlayMusic = () => {
+        if (!musicRef.current || !soundEnabled) return
+        if (!music.playing()) music.play()
+        if (audioRef.current?.context.state === 'suspended') void audioRef.current.context.resume()
       }
-      return
+      const gestureEvents = ['pointerdown', 'keydown', 'touchstart', 'click'] as const
+      gestureEvents.forEach((eventName) => window.addEventListener(eventName, tryPlayMusic, { passive: true }))
+      const cleanup = () => {
+        gestureEvents.forEach((eventName) => window.removeEventListener(eventName, tryPlayMusic))
+      }
+      musicGestureCleanupRef.current = cleanup
+      return cleanup
     }
 
     const music = musicRef.current
     if (!music) return
-    musicRef.current = null
     music.fade(music.volume(), 0, 600)
     musicStopTimerRef.current = window.setTimeout(() => {
+      if (musicRef.current === music) musicRef.current = null
       music.stop()
       music.unload()
       musicStopTimerRef.current = null
@@ -118,6 +134,8 @@ export function AmbientSoundController() {
 
   useEffect(() => {
     return () => {
+      musicGestureCleanupRef.current?.()
+      musicGestureCleanupRef.current = null
       if (musicStopTimerRef.current) window.clearTimeout(musicStopTimerRef.current)
       if (musicRef.current) {
         musicRef.current.stop()

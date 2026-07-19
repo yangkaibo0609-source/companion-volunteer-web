@@ -48,7 +48,6 @@ export function DialogBox({ speaker, text, canAdvance, onNext, showClickHint = f
       <span className="dialog-cue">{isComplete ? (canAdvance ? '继续' : '选择你的回应') : '展开'}</span>
       <span className={`game-click-hint${showClickHint ? '' : ' is-hidden'}`} aria-hidden="true">
         <i />
-        <b>轻点继续</b>
       </span>
     </button>
   )

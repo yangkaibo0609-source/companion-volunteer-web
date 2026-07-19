@@ -24,8 +24,8 @@ export function ChoiceList({ choices, onSelect, showGuide = false }: ChoiceListP
     <div className={`choice-list${showGuide ? ' has-guide' : ''}`} aria-label="选择回应">
       {showGuide && (
         <div className="choice-hand-guide" aria-hidden="true">
-          <span>☝</span>
-          <strong>点击一项，做出你的选择</strong>
+          <span className="choice-hand-guide__finger" data-direction="down">👇</span>
+          <strong>点击下方选项，做出你的选择</strong>
         </div>
       )}
       {choices.map((choice, index) => (
