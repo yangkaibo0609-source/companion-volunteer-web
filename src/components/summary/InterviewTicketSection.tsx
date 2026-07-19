@@ -246,6 +246,7 @@ function TicketStage({ story, index, total, onClose, onNext, onPrevious }: Ticke
 
 export function InterviewTicketSection({ sectionRef }: InterviewTicketSectionProps) {
   const [selectedId, setSelectedId] = useState('')
+  const [galleryVisible, setGalleryVisible] = useState(false)
   const wallRef = useRef<HTMLDivElement | null>(null)
   const selectedIndex = Math.max(
     0,
@@ -272,6 +273,21 @@ export function InterviewTicketSection({ sectionRef }: InterviewTicketSectionPro
   const scrollToWall = () => wallRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
 
   useEffect(() => {
+    const wall = wallRef.current
+    if (!wall || !('IntersectionObserver' in window)) {
+      setGalleryVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setGalleryVisible(Boolean(entry?.isIntersecting)),
+      { rootMargin: '180px 0px', threshold: 0 },
+    )
+    observer.observe(wall)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
     if (!selectedStory) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -287,7 +303,7 @@ export function InterviewTicketSection({ sectionRef }: InterviewTicketSectionPro
   return (
     <section
       ref={sectionRef}
-      className={`interview-ticket-section${selectedStory ? ' is-staged' : ''}`}
+      className={`interview-ticket-section${selectedStory ? ' is-staged' : ''}${galleryVisible ? ' is-gallery-visible' : ''}`}
       aria-label="访谈票根"
     >
       <TicketTransition onEnter={scrollToWall} />

@@ -2,14 +2,31 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { investigationPhotos } from '../../data/investigationData'
 
 const trackOrders = [
-  [0, 10, 1, 8, 2, 3, 11, 4, 9, 5, 6, 12, 7],
-  [4, 5, 11, 9, 6, 7, 0, 12, 8, 1, 2, 10, 3],
-  [9, 7, 12, 6, 5, 8, 4, 10, 3, 2, 11, 1, 0],
+  [0, 3, 6, 10, 12, 2, 8],
+  [1, 4, 7, 11, 5, 9, 0],
+  [2, 5, 8, 12, 6, 10, 3],
 ]
 
 export function VolunteerPhotoWall() {
+  const sectionRef = useRef<HTMLElement | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [isActive, setIsActive] = useState(false)
   const lastTriggerRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section || !('IntersectionObserver' in window)) {
+      setIsActive(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsActive(Boolean(entry?.isIntersecting)),
+      { rootMargin: '180px 0px', threshold: 0 },
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     if (selectedIndex == null) return
@@ -28,7 +45,7 @@ export function VolunteerPhotoWall() {
   }
 
   return (
-    <section className="volunteer-photo-wall" aria-labelledby="volunteer-photo-wall-title">
+    <section ref={sectionRef} className={`volunteer-photo-wall${isActive ? ' is-active' : ''}`} aria-labelledby="volunteer-photo-wall-title">
       <header className="investigation-heading">
         <p className="summary-kicker">现场记录</p>
         <h2 id="volunteer-photo-wall-title">志愿者的面孔从来不是单一的。</h2>

@@ -7294,12 +7294,10 @@ p,
 
 @keyframes chalkLineSlideIn {
   0% {
-    filter: blur(2px);
     opacity: 0;
     transform: translateX(34px);
   }
   100% {
-    filter: blur(0);
     opacity: 1;
     transform: translateX(0);
   }
@@ -7770,4 +7768,76 @@ p,
     opacity: 1;
     transform: none;
   }
+}
+
+/* Keep long-form scrolling inexpensive without changing the editorial layout. */
+body,
+#root,
+.experience-shell,
+.loading-screen,
+.badge-opening,
+.game-scene,
+.summary-page,
+.data-blackboard-section,
+.interview-ticket-section,
+.closing-reflection-section,
+.volunteer-photo-wall,
+.volunteer-voice-wall,
+.volunteer-message-wall {
+  background-attachment: scroll;
+}
+
+.brand-button,
+.status-cluster,
+.sound-toggle,
+.hud-brand,
+.hud-stats {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: rgb(255 250 232 / 0.86);
+}
+
+.photo-wall-track__stream,
+.interview-ticket-section .hanging-ticket__button,
+.interview-ticket-section .ticket-clothesline__tap-mark {
+  animation-play-state: paused;
+}
+
+.volunteer-photo-wall.is-active .photo-wall-track__stream,
+.interview-ticket-section.is-gallery-visible .hanging-ticket__button,
+.interview-ticket-section.is-gallery-visible .ticket-clothesline__tap-mark {
+  animation-play-state: running;
+}
+
+.interview-ticket-section.is-gallery-visible .hanging-ticket:hover .hanging-ticket__button,
+.interview-ticket-section.is-gallery-visible .hanging-ticket:focus-within .hanging-ticket__button,
+.interview-ticket-section.is-gallery-visible .hanging-ticket.is-dragging .hanging-ticket__button {
+  animation-play-state: paused;
+}
+
+/* One reading face for every expanded blackboard note. */
+.chalk-notes-paper,
+.chalk-notes-paper button,
+.chalk-notes-paper .chalk-lines,
+.chalk-notes-paper .chalk-metric span,
+.chalk-notes-paper .chalk-closing,
+.chalk-notes-paper .chart-scroll,
+.chalk-notes-paper .inline-data-chart,
+.chalk-notes-paper .inline-data-chart figcaption,
+.chalk-postscript__copy {
+  font-family: var(--font-body);
+}
+
+.chalk-notes-paper .chalk-lines p,
+.chalk-postscript__copy p {
+  font-family: var(--font-body);
+  font-size: clamp(18px, 1.18vw, 20px);
+  font-weight: 560;
+  line-height: 1.82;
+}
+
+.chalk-postscript__copy h3 {
+  font-family: var(--font-body);
+  font-weight: 850;
+  line-height: 1.28;
 }
