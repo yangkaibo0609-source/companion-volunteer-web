@@ -7826,6 +7826,10 @@ body,
 .chalk-notes-paper .inline-data-chart figcaption,
 .chalk-postscript__copy {
   font-family: var(--font-body);
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 46em;
+  text-align: left;
 }
 
 .chalk-notes-paper .chalk-lines p,
@@ -7838,6 +7842,8 @@ body,
 
 .chalk-postscript__copy h3 {
   font-family: var(--font-body);
+  font-size: clamp(28px, 2.25vw, 38px);
   font-weight: 850;
-  line-height: 1.28;
+  line-height: 1.2;
+  white-space: nowrap;
 }
