@@ -1,7 +1,8 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
+import { Fragment, useEffect, useState, type CSSProperties, type RefObject } from 'react'
 import { dataBlackboardScenes, type BlackboardMetric, type DataBlackboardScene as Scene, type SourceParagraph as SourceParagraphData } from '../../data/dataBlackboard'
 import { dataSectionCovers, type SectionCoverAsset } from '../../data/sectionCovers'
 import { SectionCover } from './SectionCover'
+import { InlineDataChart } from './InlineDataChart'
 import { VolunteerMessageWall } from './VolunteerMessageWall'
 import { VolunteerPhotoWall } from './VolunteerPhotoWall'
 import { VolunteerVoiceWall } from './VolunteerVoiceWall'
@@ -10,71 +11,18 @@ type DataBlackboardSectionProps = {
   sectionRef?: RefObject<HTMLElement | null>
 }
 
-function InlineDataChart({ chart }: { chart: NonNullable<SourceParagraphData['chart']> }) {
-  const chartRef = useRef<HTMLDivElement | null>(null)
-  const [shouldLoad, setShouldLoad] = useState(false)
-  const [failed, setFailed] = useState(false)
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    const element = chartRef.current
-    if (!element || shouldLoad) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return
-        setShouldLoad(true)
-        observer.disconnect()
-      },
-      { rootMargin: '1100px 0px' },
-    )
-
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [shouldLoad])
-
-  useEffect(() => {
-    if (!shouldLoad || loaded || failed) return
-    const timeout = window.setTimeout(() => setFailed(true), 16000)
-    return () => window.clearTimeout(timeout)
-  }, [failed, loaded, shouldLoad])
-
-  return (
-    <figure className={`inline-data-chart${loaded ? ' is-loaded' : ''}`} ref={chartRef}>
-      <figcaption>{chart.title}</figcaption>
-      {shouldLoad && !failed ? (
-        <>
-          {!loaded && <span className="inline-data-chart__status">图表正在展开</span>}
-          <iframe
-            src={chart.src}
-            title={chart.title}
-            loading="lazy"
-            onError={() => setFailed(true)}
-            onLoad={() => setLoaded(true)}
-          />
-        </>
-      ) : failed ? (
-        <div className="inline-data-chart__fallback">
-          <strong>{chart.title}</strong>
-          <a href={chart.src} rel="noreferrer" target="_blank">打开原始图表</a>
-        </div>
-      ) : (
-        <span aria-hidden="true" className="inline-data-chart__loading">图表正在展开</span>
-      )}
-    </figure>
-  )
-}
-
 function SourceParagraph({ paragraph, index }: { paragraph: SourceParagraphData; index: number }) {
   return (
     <>
-      <p style={{ '--line-index': index } as CSSProperties}>
-        {paragraph.segments.map((segment, segmentIndex) => (
-          <span className={segment.emphasis ? 'source-emphasis' : undefined} key={`${segment.text}-${segmentIndex}`}>
-            {segment.text}
-          </span>
-        ))}
-      </p>
+      {paragraph.segments.length > 0 && (
+        <p style={{ '--line-index': index } as CSSProperties}>
+          {paragraph.segments.map((segment, segmentIndex) => (
+            <span className={segment.emphasis ? 'source-emphasis' : undefined} key={`${segment.text}-${segmentIndex}`}>
+              {segment.text}
+            </span>
+          ))}
+        </p>
+      )}
       {paragraph.chart && <InlineDataChart chart={paragraph.chart} />}
     </>
   )
@@ -83,7 +31,7 @@ function SourceParagraph({ paragraph, index }: { paragraph: SourceParagraphData;
 function ChalkReveal({ paragraphs, visible }: { paragraphs: SourceParagraphData[]; visible: boolean }) {
   return (
     <div className={`chalk-lines${visible ? ' is-visible' : ''}`}>
-      {paragraphs.map((paragraph, index) => <SourceParagraph index={index} key={paragraph.segments.map((segment) => segment.text).join('')} paragraph={paragraph} />)}
+      {paragraphs.map((paragraph, index) => <SourceParagraph index={index} key={`${index}-${paragraph.segments.map((segment) => segment.text).join('')}`} paragraph={paragraph} />)}
     </div>
   )
 }
@@ -170,6 +118,18 @@ function DataBlackboardScene({ scene }: { scene: Scene }) {
               />
             ))}
           </div>
+          {scene.postscript && (
+            <section className="chalk-postscript" aria-label="时间的重量补充叙事">
+              <InlineDataChart chart={scene.postscript.chart} className="inline-data-chart--time" />
+              <div className="chalk-postscript__copy">
+                {scene.postscript.paragraphs.map((text, index) => (
+                  index === scene.postscript?.headingIndex
+                    ? <h3 key={text}>{text}</h3>
+                    : <p key={text}>{text}</p>
+                ))}
+              </div>
+            </section>
+          )}
           <ChalkTimeline items={scene.timeline} visible />
           {scene.closing && (
             <div className="chalk-closing is-visible">

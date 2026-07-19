@@ -2,9 +2,9 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { investigationPhotos } from '../../data/investigationData'
 
 const trackOrders = [
-  [0, 1, 8, 2, 3, 4, 9, 5, 6, 7],
-  [4, 5, 9, 6, 7, 0, 8, 1, 2, 3],
-  [9, 7, 6, 5, 8, 4, 3, 2, 1, 0],
+  [0, 10, 1, 8, 2, 3, 11, 4, 9, 5, 6, 12, 7],
+  [4, 5, 11, 9, 6, 7, 0, 12, 8, 1, 2, 10, 3],
+  [9, 7, 12, 6, 5, 8, 4, 10, 3, 2, 11, 1, 0],
 ]
 
 export function VolunteerPhotoWall() {

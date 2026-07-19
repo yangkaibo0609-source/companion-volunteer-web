@@ -6,6 +6,12 @@ export type BlackboardChart = { title: string; src: string }
 
 export type SourceParagraph = { segments: SourceSegment[]; chart?: BlackboardChart }
 
+export type ScenePostscript = {
+  chart: BlackboardChart
+  paragraphs: string[]
+  headingIndex?: number
+}
+
 export type DataBlackboardScene = {
   id: string
   part: number
@@ -16,10 +22,16 @@ export type DataBlackboardScene = {
   metrics: BlackboardMetric[]
   timeline?: string[]
   closing?: SourceParagraph
+  postscript?: ScenePostscript
 }
 
 const paragraph = (segments: SourceSegment[], chart?: BlackboardChart): SourceParagraph => ({ segments, chart })
 const chart = (title: string, src: string): BlackboardChart => ({ title, src })
+
+export const volunteerHighFrequencyChart = chart(
+  '访谈高频词',
+  'https://dycharts.com/xshow/index.html?id=c_b0a628793cff844051f2a5d482d3c5eb',
+)
 
 export const dataBlackboardScenes: DataBlackboardScene[] = [
   {
@@ -55,6 +67,19 @@ export const dataBlackboardScenes: DataBlackboardScene[] = [
       paragraph([{ text: '平均到每位活跃志愿者，人均' }, { text: '86.52小时/年', emphasis: true }, { text: '。' }]),
     ],
     metrics: [{ value: '5,871元', label: '心智障碍者家庭月均支出5,871元' }, { value: '41.06亿小时', label: '全国活跃志愿者年度贡献服务总时长' }, { value: '86.52小时/年', label: '平均到每位活跃志愿者，人均86.52小时/年' }],
+    postscript: {
+      chart: chart('志愿者服务时间来源', 'https://dycharts.com/xshow/index.html?id=c_2700ea033515c3a86b03a0f2916eb03e'),
+      headingIndex: 2,
+      paragraphs: [
+        '这些时间从何而来？从周末、从夜晚、从节假日的休息中挤出来。他们不是闲人——他们是上班族、是学生、是退休老人，用本属于自己的时间，填补了公共服务与家庭需求之间的缝隙。',
+        '他们走进“星星的孩子”的世界，走进那些被日常压得喘不过气的家庭。他们从2.4亿人中走来，带着时间、体力和一份不计回报的心意。',
+        '但走出那扇门之后呢？',
+        '他们回到自己的生活里——可能是一个同样需要照顾的家庭，可能是一份不敢请假的工位，也可能是一个无人问津的夜晚。',
+        '照亮他人的人，也渴望被看见。不是被赞美，是被理解——理解他们的疲惫，理解他们偶尔也想放弃的瞬间，理解他们其实也怕黑。',
+        '善意从来不是无限的。它需要被支持，被回应，被接住。',
+        '下一次，当你看到那束光，请记得——它也需要有人为它添一点灯油。',
+      ],
+    },
   },
   {
     id: 'dilemma', part: 3, label: '数据黑板 04', question: '职业倦怠与心理健康', sourceSection: '职业倦怠与心理健康；薪酬困境：情怀无法替代面包；志愿者的真实困境',
