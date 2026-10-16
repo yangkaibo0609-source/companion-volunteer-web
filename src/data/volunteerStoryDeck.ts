@@ -67,7 +67,7 @@ export const volunteerStoryDeck: StoryDeckSlide[] = [
     imageNote: 'The people who come closer',
     backText: '志愿者的面孔从来不是单一的。',
     dataNotes: [
-      { label: '实名注册志愿者', value: '2.4 亿' },
+      { label: '实名注册志愿者', value: '2.68 亿' },
       { label: '助残志愿者', value: '3744.3 万' },
       { label: '志愿者的面孔', value: '从来不是单一的' },
     ],
